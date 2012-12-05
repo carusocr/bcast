@@ -1,0 +1,9 @@
+source :rubygems
+
+gem 'nokogiri'
+gem 'rails'
+
+gem 'mysql'
+gem 'sqlite3'
+
+
