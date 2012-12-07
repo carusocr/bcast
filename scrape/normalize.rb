@@ -1,10 +1,9 @@
 #!/bin/ruby
 
-
 #TODO
-#1. Clean up external resources (so we don't have to normalize
-#   the iso stuff every time we iterate, for instance; Add
-#   Katie's custom iso codes at this point
+
+#1 Add Katie's custom iso codes at this point
+#2. CLEAN UP ISO LANGS MORE
 #2. Add support for multiple languages (for now tokenize is just 
 #   an uncalled method
 
@@ -15,12 +14,23 @@ require 'active_support/core_ext/string/conversions.rb'
 
 
 class ScraperUtils
-  @@iso_6393_codes = File.open("lib/iso-639-3_Name_Index_20120816.tab", 'r').readlines
-  @@iso_country_codes = Nokogiri::XML(open("lib/country_names_and_code_elements_xml.htm"))
-  match_dict = {}
+  @@iso_6393_codes = File.open(File.expand_path("../lib/iso-639-3_Name_Index_20120816.tab", __FILE__), 'r').readlines
+  @@iso_country_codes = Nokogiri::XML(open(File.expand_path("../lib/country_names_and_code_elements_xml.htm", __FILE__)))
+  @@clean_iso_table = {}
+
+  def initialize()
+    @@iso_6393_codes.each do |line|
+      line = line.split("\t")
+      @@clean_iso_table[normalize(line[1])] = line[0].chomp
+    end
+
+  end
 
   #Levenshtein implementation courtesy of wikipedia
   def levenshtein(a, b)
+    a.chomp
+    b.chomp
+
     case
     when a.empty? then b.length
     when b.empty? then a.length
@@ -34,24 +44,28 @@ class ScraperUtils
   #Function to return iso code for each language
   def get_iso_lang(language)
     best_match = ["UNK", language.length]
+    n_lang = normalize(language.chomp)
 
-    @@iso_6393_codes.each do |line|
-      iso_lang = normalize(line.split("\t")[1])
-      n_lang = normalize(language[0])
-      ldist = levenshtein(iso_lang, n_lang)
-      if ldist < best_match[1]
-        best_match = [iso_lang[0], ldist]
+    if @@clean_iso_table.include?(n_lang)
+      best_match = [n_lang, 0]
+    else
+      @@clean_iso_table.keys.each do |iso_lang|
+        ldist = levenshtein(iso_lang, n_lang)
+
+        if ldist < best_match[1]
+          best_match = [iso_lang, ldist]
+        end
       end
+      return best_match
     end
-    return best_match
 
   end
 
   #Function to return iso code for each country
   def get_iso_country(country)
     @@iso_country_codes.xpath("//ISO_3166-1_Entry").each do |code|
-      if (country.upcase == code.xpath("//ISO_3166-1_Country_name").to_s)
-        return code.xpath("//ISO3166-1_Alpha-2_Code_element").to_s
+      if (country.upcase == code.xpath("ISO_3166-1_Country_name")[0].content)
+        return code.xpath("ISO_3166-1_Alpha-2_Code_element")[0].content
       else
         return "UNK"
       end
@@ -60,14 +74,15 @@ class ScraperUtils
 
 
   #Helper function for cleaning up language data
+  #returned items must be chomped
   def tokenize(language)
     #Scrubs out parentheticals
-    return language.gsub(/\(|\)|\-/, "").split(/\/|\&amp\;|,|and/)
+    return language.gsub(/\(|\)|\-/, " ").split(/\/|\&amp\;|,|\sand\s/)
   end
 
-  #Helper function 
+  #Helper function returning 
   def normalize(string)
-    return string.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').split.sort.join(" ").downcase.to_s
+    return string.mb_chars.normalize(:kd).downcase.gsub(/[^\x20 | ^\x61-\x7A]/,'').split.sort.join(" ").to_s
   end
 
   #Helper function to get delta time in seconds

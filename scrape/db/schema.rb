@@ -2,22 +2,22 @@ require 'rubygems'
 require 'active_record'
 require 'yaml'
 
-config = YAML.load_file("config.yaml")
+config = YAML.load_file(File.expand_path("../config.yaml", __FILE__))
 
 ActiveRecord::Base.establish_connection(
-    "adapter" => config['dev']['adapter'],
-    "database" => config['dev']['database'],
-    "timeout" => config['dev']['timeout'],
+    :adapter => config['dev']['adapter'],
+    :database => config['dev']['database'],
+    :timeout => config['dev']['timeout'],
 )
 
 begin
-  AciveRecord::Schema.drop_table('scola')
+  ActiveRecord::Schema.drop_table('scola_records')
 rescue
   nil
 end
 
 ActiveRecord::Schema.define do  
-  create_table "scola",   :force => true do |t|
+  create_table "scola_records",   :force => true do |t|
     t.string "prog_id",      :null => false
     t.string "iso_ln",       :null => false
     t.string "iso_cn",       :null => false
