@@ -6,7 +6,7 @@ config = YAML.load_file(File.expand_path("../config.yaml", __FILE__))
 
 ActiveRecord::Base.establish_connection(
     :adapter => config['dev']['adapter'],
-    :database => config['dev']['database'],
+    :database => 'test.db',
     :timeout => config['dev']['timeout'],
 )
 

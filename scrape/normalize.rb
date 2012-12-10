@@ -3,8 +3,9 @@
 #TODO
 
 #1 Add Katie's custom iso codes at this point
-#2. CLEAN UP ISO LANGS MORE
-#2. Add support for multiple languages (for now tokenize is just 
+#2. Possibly clean up iso langs
+#3. clean up iso country (russia get a no hit since russian federation is in the table
+#4. Add support for multiple languages (for now tokenize is just 
 #   an uncalled method
 
 require 'csv'
@@ -22,6 +23,7 @@ class ScraperUtils
     @@iso_6393_codes.each do |line|
       line = line.split("\t")
       @@clean_iso_table[normalize(line[1])] = line[0].chomp
+     
     end
 
   end
@@ -47,18 +49,18 @@ class ScraperUtils
     n_lang = normalize(language.chomp)
 
     if @@clean_iso_table.include?(n_lang)
-      best_match = [n_lang, 0]
-    else
-      @@clean_iso_table.keys.each do |iso_lang|
-        ldist = levenshtein(iso_lang, n_lang)
+      best_match = [@@clean_iso_table[n_lang], 0]
+    #else
+      #levenshtein takes forever
+      ##@@clean_iso_table.keys.each do |iso_lang|
+        #ldist = levenshtein(iso_lang, n_lang)
 
-        if ldist < best_match[1]
-          best_match = [iso_lang, ldist]
-        end
-      end
-      return best_match
+       #if ldist < best_match[1]
+         # best_match = [iso_lang, ldist]
+        #end
+      #end
     end
-
+    return best_match
   end
 
   #Function to return iso code for each country
@@ -66,10 +68,9 @@ class ScraperUtils
     @@iso_country_codes.xpath("//ISO_3166-1_Entry").each do |code|
       if (country.upcase == code.xpath("ISO_3166-1_Country_name")[0].content)
         return code.xpath("ISO_3166-1_Alpha-2_Code_element")[0].content
-      else
-        return "UNK"
       end
     end
+    return "UNK"
   end
 
 
