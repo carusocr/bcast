@@ -5,8 +5,7 @@
 #1 Add Katie's custom iso codes at this point
 #2. Possibly clean up iso langs
 #3. clean up iso country (russia get a no hit since russian federation is in the table
-#4. Add support for multiple languages (for now tokenize is just 
-#   an uncalled method
+
 
 require 'csv'
 require 'nokogiri'
@@ -28,20 +27,6 @@ class ScraperUtils
 
   end
 
-  #Levenshtein implementation courtesy of wikipedia
-  def levenshtein(a, b)
-    a.chomp
-    b.chomp
-
-    case
-    when a.empty? then b.length
-    when b.empty? then a.length
-    else [(a[0] == b[0] ? 0 : 1) + levenshtein(a[1..-1], b[1..-1]),
-          1 + levenshtein(a[1..-1], b),
-          1 + levenshtein(a, b[1..-1])].min
-    end
-  end
-
 
   #Function to return iso code for each language
   def get_iso_lang(language)
@@ -50,16 +35,37 @@ class ScraperUtils
 
     if @@clean_iso_table.include?(n_lang)
       best_match = [@@clean_iso_table[n_lang], 0]
-    #else
-      #levenshtein takes forever
-      ##@@clean_iso_table.keys.each do |iso_lang|
-        #ldist = levenshtein(iso_lang, n_lang)
-
-       #if ldist < best_match[1]
-         # best_match = [iso_lang, ldist]
-        #end
-      #end
+    #Hard Codes to match ISO conventions to SCOLA conventions
+    elsif n_lang == "mandarin"
+      best_match = ["cmn", 0]
+    elsif n_lang == "farsi"
+      best_match = ["fas", 0]
+    elsif n_lang == "swahili"
+      best_match= ["swa", 0]
+    elsif n_lang == "southern vietnamese"
+      best_match = ["vie", 0]
+    elsif n_lang == "malay"
+      best_match = ["zlm", 0]
+    elsif n_lang == "greek"
+      best_match = ["ell", 0]
+    elsif n_lang == "nepali"
+      best_match = ["npi", 0]
+    elsif n_lang == "iraqi"
+      best_match = ["acm", 0]
+    elsif n_lang == "ilocando"
+      best_match = ["ilo", 0]
+    elsif n_lang == "saraiki"
+      best_match = ["skr", 0]
+    elsif n_lang == "sorani"
+      best_match = ["ckb", 0]
+    elsif n_lang == "yakutian"
+      best_match = ["sah", 0]
+    elsif n_lang == "luganda"
+      best_match = ["lug", 0]      
+    elsif n_lang == "arabic yemeni"
+      best_match = ["ara", 0]
     end
+
     return best_match
   end
 
@@ -78,7 +84,7 @@ class ScraperUtils
   #returned items must be chomped
   def tokenize(language)
     #Scrubs out parentheticals
-    return language.gsub(/\(|\)|\-/, " ").split(/\/|\&amp\;|,|\sand\s/)
+    return language.gsub(/\(|\)|\-/, " ").split(/\/|\&amp\;|\&|,|\sand\s/)
   end
 
   #Helper function returning 

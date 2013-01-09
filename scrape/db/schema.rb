@@ -21,7 +21,8 @@ ActiveRecord::Schema.define do
     t.string "prog_id",      :null => false
     t.string "iso_ln",       :null => false
     t.string "iso_cn",       :null => false
-    t.datetime "start_time", :null => false
+    t.string "start_time", :null => false
+    t.string "day",          :null => false
     t.integer "duration",    :null => false
     t.datetime "f_seen",     :null => false
     t.datetime "l_seen",     :null => false
