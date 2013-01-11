@@ -30,7 +30,7 @@ class ScraperUtils
 
   #Function to return iso code for each language
   def get_iso_lang(language)
-    best_match = ["UNK", language.length]
+    best_match = ["ZXX", language.length]
     n_lang = normalize(language.chomp)
 
     if @@clean_iso_table.include?(n_lang)
@@ -64,6 +64,7 @@ class ScraperUtils
       best_match = ["lug", 0]      
     elsif n_lang == "arabic yemeni"
       best_match = ["ara", 0]
+
     end
 
     return best_match
@@ -71,12 +72,57 @@ class ScraperUtils
 
   #Function to return iso code for each country
   def get_iso_country(country)
+    #Kinda redundant but downcasing first makes the hardcoding a bit more obvious
+    country = country.downcase
+
+    if country == "bosnia herzogovnia"
+      country = "bosnia and herzogovnia"
+    elsif country == "russia"
+      country = "russian federation"
+    elsif country == "laos"
+      country = "lao peoples democratic republic"
+    elsif country == "iran"
+      country = "islamic republic of iran"
+    elsif country == "taiwan"
+      country = "province of china taiwan"
+    elsif country == "north korea"
+      country = "democratic people's republic of korea"
+    elsif country == "south korea"
+      country = "republic of korea"
+    elsif country == "basque spain"
+      country = "spain"
+    elsif country == "macedonia"
+      country = "the former yugoslav republic of macedonia"
+    elsif country == "tanzania"
+      country = "united republic of tanzania"
+    elsif country == "vietnam"
+      country = "viet nam"
+    elsif country == "venezuela"
+      country = "bolivarian republic of venezuela"
+    elsif country == "syria"
+      country = "syrian arab republic"
+    elsif country == "dem rep congo"
+      country = "congo"
+    elsif country == "dagestan"
+      country = "russian federation"
+    elsif country == "adygea"
+      country = "russian federation"
+    elsif country == "circassia karachaevo"
+      country = "russian federation"
+    elsif country == "tartarstan"
+      country = "russian feeration"
+    end
+
+    country = normalize(country)
+
     @@iso_country_codes.xpath("//ISO_3166-1_Entry").each do |code|
-      if (country.upcase == code.xpath("ISO_3166-1_Country_name")[0].content)
+      n_country = normalize(code.xpath("ISO_3166-1_Country_name")[0].content)
+
+      if (country.upcase == n_country)
         return code.xpath("ISO_3166-1_Alpha-2_Code_element")[0].content
       end
     end
-    return "UNK"
+    return "ZZ"
   end
 
 

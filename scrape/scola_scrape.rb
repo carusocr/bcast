@@ -36,23 +36,23 @@ class Scraper
           prog_data[program] = {}
           prog_data[program]['day'] = day
 
-          #we gotta match day here
           schedule.each do |i|
-            if /StartTime/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
+            if /StartTime/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
               prog_data[program]['st_raw'] = i.content.split(":").join("")
               prog_data[program]['start_time'] = DateTime.strptime(i.content, '%H:%M')
-            elsif /EndTime/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
+            elsif /EndTime/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
 
               prog_data[program]['end_time'] = DateTime.strptime(i.content, '%H:%M')
-            elsif /Language/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
+            elsif /Language/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
 
               prog_data[program]['language'] = @@utils.tokenize(i.content)
-            elsif /Country/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
+            elsif /Country/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
 
-              prog_data[program]['country'] = @@utils.normalize(i.content)
+              prog_data[program]['country'] = i.content
             end            
           end
 
+          puts PP.pp(prog_data[program])
 
           #Program 00 is some kind of placeholder crap
           if not program == "00"
@@ -71,8 +71,11 @@ class Scraper
 
             last_seen = Date.today
 
-            iso_cn = @@utils.get_iso_country(n_country)
-            
+            if n_country != nil and n_country.downcase == 'kosovo'
+              iso_cn = "XK"
+            else
+              iso_cn = @@utils.get_iso_country(n_country)
+            end
 
             num_lang.each do |lang|
               lang = lang.chomp()
@@ -90,11 +93,15 @@ class Scraper
             end
           end
           
-
+          
         end      
       end
+      
     end
   end
 end
 
-
+if __FILE__ == $0
+  this_scraper = Scraper.new
+  this_scraper.scrape
+end
