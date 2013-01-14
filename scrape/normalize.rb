@@ -1,4 +1,5 @@
 #!/bin/ruby
+# -*- coding: utf-8 -*-
 
 #TODO
 
@@ -22,9 +23,7 @@ class ScraperUtils
     @@iso_6393_codes.each do |line|
       line = line.split("\t")
       @@clean_iso_table[normalize(line[1])] = line[0].chomp
-     
     end
-
   end
 
 
@@ -75,7 +74,7 @@ class ScraperUtils
     #Kinda redundant but downcasing first makes the hardcoding a bit more obvious
     country = country.downcase
 
-    if country == "bosnia herzogovnia"
+    if country == "bosnia-herzogovnia"
       country = "bosnia and herzogovnia"
     elsif country == "russia"
       country = "russian federation"
@@ -101,16 +100,19 @@ class ScraperUtils
       country = "bolivarian republic of venezuela"
     elsif country == "syria"
       country = "syrian arab republic"
-    elsif country == "dem rep congo"
+    elsif country == "rep.dem.congo"
       country = "congo"
     elsif country == "dagestan"
       country = "russian federation"
     elsif country == "adygea"
       country = "russian federation"
-    elsif country == "circassia karachaevo"
+    elsif country == "karachaevo circassia"
       country = "russian federation"
     elsif country == "tartarstan"
       country = "russian federation"
+    elsif country == "ivory coast"
+      # This seems like the wrong way of doing this but not sure how else to guarentee the match
+      country = "CÃTE D'IVOIRE".downcase
     end
 
     country = normalize(country)
@@ -126,14 +128,16 @@ class ScraperUtils
   end
 
 
-  #Helper function for cleaning up language data
-  #returned items must be chomped
+  # Helper function for cleaning up language data
+  # items are returned as a list and individual items must be chomped if necessary
+  # the way this split is implemented is highly dependent on SCOLA.orgs conventions
+  # and could easily be broken if they decided to change those
   def tokenize(language)
     #Scrubs out parentheticals
     return language.gsub(/\(|\)|\-/, " ").split(/\/|\&amp\;|\&|,|\sand\s/)
   end
 
-  #Helper function returning 
+  #Helper function returning a string kd normalized but allowing spaces, basically removes all accents
   def normalize(string)
     return string.mb_chars.normalize(:kd).downcase.gsub(/[^\x20 | ^\x61-\x7A]/,'').split.sort.join(" ").to_s
   end
