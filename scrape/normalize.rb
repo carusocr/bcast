@@ -110,15 +110,15 @@ class ScraperUtils
     elsif country == "circassia karachaevo"
       country = "russian federation"
     elsif country == "tartarstan"
-      country = "russian feeration"
+      country = "russian federation"
     end
 
     country = normalize(country)
-
+    
     @@iso_country_codes.xpath("//ISO_3166-1_Entry").each do |code|
       n_country = normalize(code.xpath("ISO_3166-1_Country_name")[0].content)
 
-      if (country.upcase == n_country)
+      if (country.upcase == n_country.upcase)
         return code.xpath("ISO_3166-1_Alpha-2_Code_element")[0].content
       end
     end

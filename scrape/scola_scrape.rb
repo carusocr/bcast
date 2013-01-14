@@ -1,4 +1,4 @@
-#Author: Benjamin Bascom
+1#Author: Benjamin Bascom
 #SCOLA Scraper v 0.0
 #Date: 12/3/2012
 
@@ -78,7 +78,7 @@ class Scraper
             end
 
             num_lang.each do |lang|
-              lang = lang.chomp()
+              lang = lang.strip()
               iso_ln = @@utils.get_iso_lang(lang)[0]
               prog_id = iso_ln.upcase + "_" + page_num.to_s + "_" + prog_data[program]['st_raw'] + "_" + duration.to_s
               st_time = prog_data[program]['st_raw'][0..1] + ":" + prog_data[program]['st_raw'][2..3] + ":" + prog_data[program]['st_raw'][4..5]
