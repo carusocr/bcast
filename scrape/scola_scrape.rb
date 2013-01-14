@@ -52,10 +52,10 @@ class Scraper
             end            
           end
 
-          puts PP.pp(prog_data[program])
+          #puts PP.pp(prog_data[program])
 
           #Program 00 is some kind of placeholder crap
-          if not program == "00"
+          if prog_data[program]['language']
 
             end_time = prog_data[program]['end_time']
             start_time = prog_data[program]['start_time']
