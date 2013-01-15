@@ -14,7 +14,9 @@ require './db/table'
 require 'pp'
 
 class Scraper
+  # Some utility methods I wrote to help with unicode normalization and tokenizing the broadcast data
   @@utils = ScraperUtils.new
+  # Basically just a wrapper class that inherits from ActiveRecord
   @@scola_table = ScolaRecord
   
   def scrape

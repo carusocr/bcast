@@ -1,13 +1,6 @@
 #!/bin/ruby
 # -*- coding: utf-8 -*-
 
-#TODO
-
-#1 Add Katie's custom iso codes at this point
-#2. Possibly clean up iso langs
-#3. clean up iso country (russia get a no hit since russian federation is in the table
-
-
 require 'csv'
 require 'nokogiri'
 require 'active_support/core_ext/string/conversions.rb'
