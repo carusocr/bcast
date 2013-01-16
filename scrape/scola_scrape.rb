@@ -1,7 +1,6 @@
-1#Author: Benjamin Bascom
+#Author: Benjamin Bascom
 #SCOLA Scraper v 0.0
 #Date: 12/3/2012
-
 
 #!/bin/ruby
 require 'rubygems'
@@ -16,6 +15,7 @@ require 'pp'
 class Scraper
   # Some utility methods I wrote to help with unicode normalization and tokenizing the broadcast data
   @@utils = ScraperUtils.new
+
   # Basically just a wrapper class that inherits from ActiveRecord
   @@scola_table = ScolaRecord
   
@@ -34,7 +34,24 @@ class Scraper
         end
       end
       
-      ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].each do |day|
+      
+      ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].each do |day|
+        if day == "Sun"
+          day_str = "00"
+        elsif day == "Mon"
+          day_str = "01"
+        elsif day == "Tue"
+          day_str = "02"
+        elsif day == "Wed"
+          day_str = "03"
+        elsif day == "Thu"
+          day_str = "04"
+        elsif day == "Fri"
+          day_str = "05"
+        elsif day == "Sat"
+          day_str = "06"
+        end
+
         prog_data = {}
         programs.uniq.each do |program|
           prog_data[program] = {}
@@ -42,16 +59,13 @@ class Scraper
 
           schedule.each do |i|
             if /StartTime/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
-              prog_data[program]['st_raw'] = i.content.split(":").join("")
+              prog_data[program]['st_raw'] = day_str + i.content.split(":").join("").chomp("00")
               prog_data[program]['start_time'] = DateTime.strptime(i.content, '%H:%M')
             elsif /EndTime/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
-
               prog_data[program]['end_time'] = DateTime.strptime(i.content, '%H:%M')
             elsif /Language/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
-
               prog_data[program]['language'] = @@utils.tokenize(i.content)
             elsif /Country/.match("#{i.to_s}") and /#{day}/.match("#{i.to_s}") and /_ctl#{program}_/.match("#{i.to_s}")
-
               prog_data[program]['country'] = i.content
             end            
           end
@@ -88,11 +102,17 @@ class Scraper
               prog_id = iso_ln.upcase + "_" + page_num.to_s + "_" + prog_data[program]['st_raw'] + "_" + duration.to_s
               st_time = prog_data[program]['st_raw'][0..1] + ":" + prog_data[program]['st_raw'][2..3] + ":" + prog_data[program]['st_raw'][4..5]
 
-              #This is where we should either create a record or update it as necessary
+              record = @@scola_table.where(:prog_id => prog_id)
+
+              # .first! will throw an exception if there is no such record which is caught in the rescue
+              # line and then a new record is written... else this record is updated
               begin
-                @@scola_table.where(:prog_id => prog_id).first!(:iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen,  :n_lang => lang, :n_country => n_country, :channel => page_num)
+                if record.first!
+                  id = record.select(:id)[0].id
+                  record.update(id, :iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen,  :n_lang => lang, :n_country => n_country, :channel => page_num)
+                end
               rescue 
-                @@scola_table.where(:prog_id => prog_id).create(:iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen, :f_seen => last_seen, :n_lang => lang, :n_country => n_country, :channel => page_num)
+                record.create(:iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen, :f_seen => last_seen, :n_lang => lang, :n_country => n_country, :channel => page_num)
               end
                   
             end

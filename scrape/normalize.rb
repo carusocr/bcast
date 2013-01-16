@@ -27,6 +27,7 @@ class ScraperUtils
 
     if @@clean_iso_table.include?(n_lang)
       best_match = [@@clean_iso_table[n_lang], 0]
+
     #Hard Codes to match ISO conventions to SCOLA conventions
     elsif n_lang == "mandarin"
       best_match = ["cmn", 0]
