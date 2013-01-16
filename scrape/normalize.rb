@@ -10,12 +10,12 @@ require 'active_support/core_ext/string/conversions.rb'
 class ScraperUtils
   @@iso_6393_codes = File.open(File.expand_path("../lib/iso-639-3_Name_Index_20120816.tab", __FILE__), 'r').readlines
   @@iso_country_codes = Nokogiri::XML(open(File.expand_path("../lib/country_names_and_code_elements_xml.htm", __FILE__)))
-  @@clean_iso_table = {}
+  @clean_iso_table = {}
 
   def initialize()
     @@iso_6393_codes.each do |line|
       line = line.split("\t")
-      @@clean_iso_table[normalize(line[1])] = line[0].chomp
+      @clean_iso_table[normalize(line[1])] = line[0].chomp
     end
   end
 
@@ -25,8 +25,8 @@ class ScraperUtils
     best_match = ["ZXX", language.length]
     n_lang = normalize(language.chomp)
 
-    if @@clean_iso_table.include?(n_lang)
-      best_match = [@@clean_iso_table[n_lang], 0]
+    if @clean_iso_table.include?(n_lang)
+      best_match = [@clean_iso_table[n_lang], 0]
 
     #Hard Codes to match ISO conventions to SCOLA conventions
     elsif n_lang == "mandarin"
