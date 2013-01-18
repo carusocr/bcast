@@ -3,7 +3,7 @@
 require 'yaml'
 require 'active_record'
 
-config = YAML.load_file(File.expand_path("../config.yaml", __FILE__))
+config = YAML.load_file(File.expand_path("../config.yml", __FILE__))
 
 ActiveRecord::Base.establish_connection(
    "adapter" => config['dev']['adapter'],
