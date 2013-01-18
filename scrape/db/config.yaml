@@ -1,13 +1,6 @@
 dev:
   adapter: sqlite3
-  database: 'db/test.db'
+  database: 'test.db'
   pool: 5
   timeout: 5000
 
-prod:
-  adapter: mysql
-  encoding: utf8
-  database: 'temp_production'
-  username: root
-  password:
-  socket: /tmp/mysql.sock

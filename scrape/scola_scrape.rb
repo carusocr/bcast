@@ -8,8 +8,8 @@ require 'open-uri'
 require 'nokogiri'
 require 'mysql'
 require 'date'
-require './normalize' 
-require './db/table'
+require File.expand_path("../normalize", __FILE__) 
+require File.expand_path("../db/table", __FILE__) 
 require 'pp'
 
 class Scraper
@@ -18,6 +18,7 @@ class Scraper
 
   # Basically just a wrapper class that inherits from ActiveRecord
   @@scola_table = ScolaRecord
+  @@output = ""
   
   def scrape
     (1...9).each do |page_num|
@@ -112,6 +113,7 @@ class Scraper
                   record.update(id, :iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen,  :n_lang => lang, :n_country => n_country, :channel => page_num)
                 end
               rescue 
+                @@output = "A new record was generated for #{iso_ln} at #{st_time}\n"
                 record.create(:iso_ln => iso_ln, :iso_cn => iso_cn, :day => day, :start_time => st_time, :duration => duration, :l_seen => last_seen, :f_seen => last_seen, :n_lang => lang, :n_country => n_country, :channel => page_num)
               end
                   
@@ -123,6 +125,7 @@ class Scraper
       end
       
     end
+    print @@output
   end
 end
 
