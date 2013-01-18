@@ -1,12 +1,13 @@
 require 'rubygems'
 require 'active_record'
 require 'yaml'
-
+ 
 config = YAML.load_file(File.expand_path("../config.yaml", __FILE__))
+
 
 ActiveRecord::Base.establish_connection(
     :adapter => config['dev']['adapter'],
-    :database => 'test.db',
+    :database => File.expand_path("../"+config['dev']['database'], __FILE__),
     :timeout => config['dev']['timeout'],
 )
 

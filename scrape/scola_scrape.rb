@@ -8,8 +8,8 @@ require 'open-uri'
 require 'nokogiri'
 require 'mysql'
 require 'date'
-require './normalize' 
-require './db/table'
+require File.expand_path("../normalize", __FILE__) 
+require File.expand_path("../db/table", __FILE__) 
 require 'pp'
 
 class Scraper
