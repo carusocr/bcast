@@ -4,21 +4,42 @@
 require 'csv'
 require 'nokogiri'
 require 'active_support/core_ext/string/conversions.rb'
-
+require 'json'
 
 
 class ScraperUtils
-  @@iso_6393_codes = File.open(File.expand_path("../lib/iso-639-3_Name_Index_20120816.tab", __FILE__), 'r').readlines
-  @@iso_country_codes = Nokogiri::XML(open(File.expand_path("../lib/country_names_and_code_elements_xml.htm", __FILE__)))
-  @@clean_iso_table = {}
 
   def initialize()
+    if File.exist?('lib/lang.json')
+      @@iso_6393_codes = JSON.parse(File.open('lib/lang.json', 'w'))
+    else
+      reinit()
+    end
+
+    if File.exist?('lib/country.json')
+      @@iso_country_codes = JSON.parse(File.open('lib/country.json', 'w'))
+    else
+      reinit()
+    end
+  end
+
+  def reinit() 
+    @@iso_6393_codes = File.open(File.expand_path("../lib/iso-639-3_Name_Index_20120816.tab", __FILE__), 'r').readlines
+    @@iso_country_codes = Nokogiri::XML(open(File.expand_path("../lib/country_names_and_code_elements_xml.htm", __FILE__)))
+    @@clean_iso_table = {}
+
     @@iso_6393_codes.each do |line|
       line = line.split("\t")
       @@clean_iso_table[normalize(line[1])] = line[0].chomp
     end
+
+    jsonize()
   end
 
+  def jsonize()     
+    File.open('lib/lang.json', 'w').write(@@iso_6393_codes.to_json)
+    File.open('lib/country.json', 'w').write(@@iso_country_codes.to_json)
+  end
 
   #Function to return iso code for each language
   def get_iso_lang(language)
@@ -141,4 +162,9 @@ class ScraperUtils
     return (time*60*60*24).to_i
   end
 
+end
+
+if __FILE__ == $0
+  this_util = ScraperUtils.new
+  ScraperUtils.reinit()
 end

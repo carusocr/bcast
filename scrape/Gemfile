@@ -2,10 +2,9 @@ source :rubygems
 
 ruby '1.9.3'
 
-
 gem 'nokogiri'
 gem 'rails'
 gem 'mysql'
 gem 'sqlite3'
 gem 'mail'
-
+gem 'json'
