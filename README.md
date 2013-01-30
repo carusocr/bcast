@@ -3,9 +3,9 @@ bcastcol
 
 Broadcast Collection Support Software Repository
 
-#scola_scrape.rb:
+##scola_scrape.rb:
 
-Web scraper for SCOLA.org broadcast schedule. Currently runs with 'ruby scola_scrape.rb' and writes to test database db/test.db which can be cleared with db/schema.rb (which contains the table definition) Could be set up to run with MySQL by modifying config.yaml and then run as a cron job by using 'crontab -e' and adding the line '* * * * * ruby ~/path/to/scola_scrape.rb' where '* * * * *' needs to be set to whatever schedule you're looking for '0 0 1 * *' <- would run at midnight the first of every month
+Web scraper for SCOLA.org broadcast schedule. Currently runs with 'ruby scola_scrape.rb' and writes to test database db/test.db which can be cleared with db/schema.rb (which contains the table definition) Could be set up to run with MySQL by modifying config.yaml and then run as a cron job (see config tips below)
 
 ###Table Schema
 The table schema is stored in db/schema.rb but essentially has the following structure:
@@ -27,10 +27,10 @@ Where:
 
 ### Config tips
 When setting up on a new system be aware of the following issues:
-1. Make sure you have cron permissions
-2. Point at the full path of a valid ruby install (1.9.3) with required gems
-3. Scraper itself does not mail out errors but will print success and failure logs to stdout, you can (and should) pipe those to mailx to make sure that if there are issues that you catch them
-4. You may have encoding issues in cron, you can make sure you have the right encoding in the folder by checking for en_US.utf8 in the localize -a for the containing folder. You may have to add 'LANG=en_US.utf8' to the crontab folder if the shell is not in the proper environment.
+* Make sure you have cron permissions
+* Point at the full path of a valid ruby install (1.9.3) with required gems
+* Scraper itself does not mail out errors but will print success and failure logs to stdout, you can (and should) pipe those to mailx to make sure that if there are issues that you catch them
+* You may have encoding issues in cron, you can make sure you have the right encoding in the folder by checking for en_US.utf8 in the localize -a for the containing folder. You may have to add 'LANG=en_US.utf8' to the crontab folder if the shell is not in the proper environment.
 
 ### Maintenance
 You can run the scraper outside of cron if you are using ruby 1.9.3 and have bundled to ensure latest versions of nokogiri et. al., it will run simply by invoked 'ruby scola_scrape.rb' from the command line. The same is true for the utility class (normalize.rb) however running it will simply reinitialize the dictionarys it has for language and country ISO data from the files in /lib ...
