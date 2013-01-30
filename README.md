@@ -24,3 +24,13 @@ Where:
 * __n_lang__ is the kd-normalized form of the language as scraped
 * __n_country__ is the kd-normalized form of the country as scraped
 * __channel__ is the integer 1-8 representation of the channel from which this record was scraped
+
+### Config tips
+When setting up on a new system be aware of the following issues:
+1. Make sure you have cron permissions
+2. Point at the full path of a valid ruby install (1.9.3) with required gems
+3. Scraper itself does not mail out errors but will print success and failure logs to stdout, you can (and should) pipe those to mailx to make sure that if there are issues that you catch them
+4. You may have encoding issues in cron, you can make sure you have the right encoding in the folder by checking for en_US.utf8 in the localize -a for the containing folder. You may have to add 'LANG=en_US.utf8' to the crontab folder if the shell is not in the proper environment.
+
+### Maintenance
+You can run the scraper outside of cron if you are using ruby 1.9.3 and have bundled to ensure latest versions of nokogiri et. al., it will run simply by invoked 'ruby scola_scrape.rb' from the command line. The same is true for the utility class (normalize.rb) however running it will simply reinitialize the dictionarys it has for language and country ISO data from the files in /lib ...

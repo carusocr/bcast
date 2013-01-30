@@ -1,6 +1,7 @@
 #!/bin/ruby
 # -*- coding: utf-8 -*-
 
+
 require 'csv'
 require 'nokogiri'
 require 'active_support/core_ext/string/conversions.rb'
@@ -8,16 +9,20 @@ require 'json'
 
 
 class ScraperUtils
+  @@clean_iso_table = {}
+  @@iso_country_codes = {}
 
   def initialize()
-    if File.exist?('lib/lang.json')
-      @@iso_6393_codes = JSON.parse(File.open('lib/lang.json', 'w'))
+    if File.exist?(File.expand_path('../lib/lang.json', __FILE__))
+      f = File.open(File.expand_path('../lib/lang.json', __FILE__), 'r').readlines
+      @@clean_iso_table = JSON.parse(f[0].encode('utf-8'))
     else
       reinit()
     end
 
-    if File.exist?('lib/country.json')
-      @@iso_country_codes = JSON.parse(File.open('lib/country.json', 'w'))
+    if File.exist?(File.expand_path('../lib/country.xml', __FILE__))
+      f = File.open(File.expand_path('../lib/country.xml', __FILE__), 'r').readlines
+      @@iso_country_codes = Nokogiri::XML(open(File.expand_path("../lib/country.xml", __FILE__)))
     else
       reinit()
     end
@@ -37,8 +42,12 @@ class ScraperUtils
   end
 
   def jsonize()     
-    File.open('lib/lang.json', 'w').write(@@iso_6393_codes.to_json)
-    File.open('lib/country.json', 'w').write(@@iso_country_codes.to_json)
+    File.open(File.expand_path('../lib/lang.json', __FILE__), 'w').write(@@clean_iso_table.to_json)
+    File.open(File.expand_path('../lib/country.xml', __FILE__), 'w').write(@@iso_country_codes)
+  end
+
+  def get_iso_table()
+    puts @@clean_iso_table
   end
 
   #Function to return iso code for each language
@@ -125,9 +134,9 @@ class ScraperUtils
       country = "russian federation"
     elsif country == "tartarstan"
       country = "russian federation"
-    elsif country == "ivory coast"
+    #elsif country == "ivory coast"
       # This seems like the wrong way of doing this but not sure how else to guarentee the match
-      country = "CÃTE D'IVOIRE".downcase
+      #country = "CÃTE D'IVOIRE".downcase
     end
 
     country = normalize(country)
@@ -166,5 +175,4 @@ end
 
 if __FILE__ == $0
   this_util = ScraperUtils.new
-  ScraperUtils.reinit()
 end
