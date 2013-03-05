@@ -1,3 +1,4 @@
 *.Zap*
 *~
 *#*
+scrape/db/test.db

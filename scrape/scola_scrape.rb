@@ -19,6 +19,7 @@ class Scraper
   # Basically just a wrapper class that inherits from ActiveRecord
   @@scola_table = ScolaRecord
   @@output = ""
+  @@o = File.open(File.expand_path("../lib/log.log", __FILE__), 'w')
   
   def scrape
     (1...9).each do |page_num|
@@ -125,7 +126,8 @@ class Scraper
       end
       
     end
-    print @@output
+    @@o.write(@@output)
+    puts @@output
   end
 end
 

@@ -19,8 +19,8 @@ Where:
 * __start_time__ is an integer of the form DD(00-06 Sun-Sat):HH(00-24):MM(00-59) of the start of the broadcast for this program
 * __day__ is a 3 character representation of the day of the broadcast (Sun-Sat)
 * __duration__ is the length of the program in seconds
-* __first_seen__ is the date that this program was first scraped
-* __last_seen__ is the date that this program was last scraped
+* __f_seen__ is the date that this program was first scraped
+* __l_seen__ is the date that this program was last scraped
 * __n_lang__ is the kd-normalized form of the language as scraped
 * __n_country__ is the kd-normalized form of the country as scraped
 * __channel__ is the integer 1-8 representation of the channel from which this record was scraped
