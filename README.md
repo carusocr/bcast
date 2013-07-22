@@ -1,4 +1,4 @@
-bcastcol
+bcast
 ========
 
 Broadcast Collection Support Software Repository
