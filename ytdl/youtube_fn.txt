@@ -1,0 +1,2 @@
+
+pass --get-filename and -o "%(uploader_id)s" to youtube-dl, returns uploader name

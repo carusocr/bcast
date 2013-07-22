@@ -34,3 +34,8 @@ When setting up on a new system be aware of the following issues:
 
 ### Maintenance
 You can run the scraper outside of cron if you are using ruby 1.9.3 and have bundled to ensure latest versions of nokogiri et. al., it will run simply by invoked 'ruby scola_scrape.rb' from the command line. The same is true for the utility class (normalize.rb) however running it will simply reinitialize the dictionarys it has for language and country ISO data from the files in /lib ...
+
+ytdl
+======
+
+Contains youtube downloader scripts.
