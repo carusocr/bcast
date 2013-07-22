@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<config>
+  <site name = 'vimeo'>
+  <download_cmd>wget -O</download_cmd>
+  <query>select id, url from ascout_url where url like '%vimeo%' and (media_file not like 'HVC%' and media_file != 'fail') and date_found > curdate() or media_file is NULL and url like '%vimeo%' and date_found > curdate()</query>
+  </site>
+  <site name = 'youtube'>
+  <download_cmd>youtube-dl -f 18 -o</download_cmd>
+  <query>select id, url from ascout_url where page_url like '%youtu%' and (media_file is NULL or media_file not like 'HVC%') and date_found like concat(curdate() - interval 1 day, '%') order by date_found desc</query>
+  </site>
+  <site name = 'vimeo_old'>
+  <download_cmd>vimeo_downloader.sh</download_cmd>
+  <query>select id, page_url from ascout_url where url like '%vimeo%' and (media_file not like 'HVC%') and date_found > '2011-08-31'</query>
+  </site>
+  <site name = 'flickr'>
+  <download_cmd>wget -O</download_cmd>
+  <query>select id, url from ascout_url where url like '%flickr%' and (media_file not like 'HVC%' or media_file is null) and date_found like concat(curdate() - interval 1 day, '%')</query>
+  </site>
+  <site name = 'mp4'>
+  <download_cmd>wget -O</download_cmd>
+  <query>select id, url from ascout_url where url not regexp '(vimeo)|(youtu)|(flickr)' and (media_file not like 'HVC%' or media_file is null) and date_found like concat(curdate() - interval 1 day, '%')</query>
+  </site>
+</config>

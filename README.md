@@ -39,3 +39,5 @@ ytdl
 ======
 
 Contains youtube downloader scripts.
+
+option to download all user uploads: youtube-dl -citw ytuser:[USERNAME]

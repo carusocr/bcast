@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<config>
+  <server>localhost</server>
+  <db>vscout</db>
+  <username>vscout_user</username>
+  <pwd>vsdev</pwd>
+</config>
