@@ -48,10 +48,20 @@ def build_channel_clips
 	
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
 	$channel_clips.each do |cc|
+		# get uploader name
 		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
-		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
+		# get list of videos
+		uploader_clips = `youtube-dl --get-filename -f 18 -o \"%(id)s\" ytuser:#{uploader}`
+		puts uploader_clips
 	end
 
+end
+
+def get_uploader_id(channel_clip)
+end
+
+def download_channel_clips(zug)
+# need to add check for existing url in database before creating another row, right?
 end
 
 build_dl_list
