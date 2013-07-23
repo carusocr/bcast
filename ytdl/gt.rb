@@ -21,31 +21,36 @@ select id, url from vscout_url where page_url like '%yout%' and (media_file is N
 
 require 'mysql'
 require 'nokogiri'
+require 'date'
 
+abort "Enter database password!" unless ARGV[0]
 $dbpass = ARGV[0]
+#accepts specific date for like statement, or defaults to yesterday.
+$daterange = ARGV[1] ? ARGV[1] : Date.today-1
 
 # do I want to connect to database outside of the methods?
-
 $m = Mysql.new "localhost", "vscout_user", "#{$dbpass}", "vscout"
+$channel_clips = []
 
 def build_dl_list
 
-	ytq = $m.query("select id, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '2013-07%' and parent_url is null")
+	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null")
 	ytq.each_hash do |r|
-		puts r['id']
+		#puts r['id'], r['subscribe'], r['url']
+		if r['subscribe'] == 'yes'
+			$channel_clips << r['url']
+		end
 	end
 
 end	
 
 def build_channel_clips
 	
-	# what's the best way to definitely exclude urls where I've already downloaded their channel clips?
-
-	ytq = $m.query("select url from vscout_url where url like '%youtu%' and subscribe = 'yes'") 
-	ytq.fetch_row.each do |r|
-		puts r
+	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
+	$channel_clips.each do |cc|
+		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
+		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
 	end
-#	puts ytq.fetch_row
 
 end
 
