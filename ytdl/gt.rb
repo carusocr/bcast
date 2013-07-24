@@ -47,12 +47,28 @@ end
 def build_channel_clips
 	
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
-	$channel_clips.each do |cc|
-		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
-		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
+
+#	$channel_clips.each do |cc|
+#		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
+#		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
+#	end
+
+	# assemble array of existing youtube clips here?
+
+	ytq = $m.query("select url from vscout_url where url like '%youtu%'")
+	ytq.each_hash do |ytc|
+		yurl =  ytc['url'][/watch\?v=(.{11})/,1]
+		puts yurl
 	end
 
 end
+
+def download_channel_clips
+end
+
+
+	
+	# 
 
 build_dl_list
 build_channel_clips
