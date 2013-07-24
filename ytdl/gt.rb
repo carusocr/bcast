@@ -48,10 +48,10 @@ def build_channel_clips
 	
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
 
-#	$channel_clips.each do |cc|
-#		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
-#		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
-#	end
+	$channel_clips.each do |cc|
+		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
+		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
+	end
 
 	# assemble array of existing youtube clips here?
 
@@ -61,14 +61,15 @@ def build_channel_clips
 		puts yurl
 	end
 
+# I want to initialize an array of existing youtube videos, then compare the array I make here and download only vids that aren't in the existing array.
+
 end
 
 def download_channel_clips
 end
 
-
-	
-	# 
+def get_uploader_id(channel_clip)
+end
 
 build_dl_list
 build_channel_clips
