@@ -15,8 +15,6 @@ Script to download youtube videos, including all videos from a user's channel.
 6. After this is done follow steps 3a-3c.
 7. Postprocessing happens later...codec, md5sum, duration. Maybe do it right after downloads?
 
-
-select id, url from vscout_url where page_url like '%yout%' and (media_file is NULL or media_file not like '%HVC%' and date_found like concat(curdate() - interval 1 day, '%') and parent_url is null order by date_found
 =end
 
 require 'mysql'
@@ -30,12 +28,12 @@ $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 
 # do I want to connect to database outside of the methods?
 $m = Mysql.new "localhost", "vscout_user", "#{$dbpass}", "vscout"
-$channel_clips = []
+$channel_clip_parents = Hash.new
 $download_list = Hash.new
 $existing_urls = Hash.new
 $downloaded_clips = Hash.new
 
-def build_dl_list
+def build_parent_clips
 
 	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null")
 	ytq.each_hash do |r|
@@ -44,20 +42,32 @@ def build_dl_list
 		download_clip
 		if r['subscribe'] == 'yes'
 			puts "Found subscription flag for url #{r['url']}\n"
-			$channel_clips << r['url']
+			$channel_clip_parents["#{r['url']}"] = ["#{r['id']}"]
 		end
 	end
 
 end	
 
-def build_channel_clips
+def build_download_list
 	
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
 
-	$channel_clips.each do |cc|
-		$download_list ["#{cc}"] = nil
-		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
-		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
+	$channel_clip_parents.sort.each do |cc, id|
+		clip_string = cc[/watch\?v=(.{11})/,1]
+		puts clip_string
+		$download_list["#{clip_string}"] = nil
+		uploader = `youtube-dl #{clip_string} --get-filename -o \"%(uploader_id)s\"`
+		puts "Uploader is #{uploader}"
+		`youtube-dl --get-filename -f 18 ytuser:#{uploader}`.split("\n").each do |c|
+			clip_url = c[/(.{11})\.mp4/,1]
+			$download_list["#{clip_url}"] = id unless clip_string == clip_url
+		end
+		#stick a loop here to call download clip, passing hash?
+		#no, download
+		#check download hash!
+	end
+	$download_list.sort_by.each do |clip, id|
+		puts "#{clip} has parent url of #{id}\n"
 	end
 
 	# assemble array of existing youtube clips here?
@@ -70,14 +80,16 @@ def build_existing_urls
 		$existing_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = "#{ytc['id']}"
 	end
 
-	puts $existing_urls.inspect
-
+	$existing_urls.sort_by.each do |k, id|
+		puts "#{k} #{id}\n"
+	end
 # I want to initialize an array of existing youtube videos, then compare the array I make here and download only vids that aren't in the existing array.
 # BEWARE of double-collecting parent urls!
+# fixed this possibility by skipping parent url when building download_clip hash, also gave them nil parent_url value
 
 end
 
-#load ALL downloaded clips into a single hash, just don't set parent_url value, if value is nil do conventional download, if not nil do channel clip download?
+#load ALL download-ready clips into a single hash, just don't set parent_url value, if value is nil do conventional download, if not nil do channel clip download?
 
 def download_clip
 =begin
@@ -85,6 +97,7 @@ def download_clip
 2. if no parent id, regular download
 3. after download, check file and update row
 4. for parent clips, set subscribe to 'dun'
+5. add downloaded clip to downloaded_clips
 =end
 end
 
@@ -94,6 +107,7 @@ end
 def generate_metadata
 end
 
-build_dl_list
-#build_channel_clips
-build_existing_urls
+build_parent_clips
+build_download_list
+#build_existing_urls
+
