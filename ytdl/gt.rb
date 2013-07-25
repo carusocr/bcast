@@ -31,13 +31,19 @@ $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 # do I want to connect to database outside of the methods?
 $m = Mysql.new "localhost", "vscout_user", "#{$dbpass}", "vscout"
 $channel_clips = []
+$download_list = Hash.new
+$existing_urls = Hash.new
+$downloaded_clips = Hash.new
 
 def build_dl_list
 
 	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null")
 	ytq.each_hash do |r|
 		#puts r['id'], r['subscribe'], r['url']
+		#call download_clip first, THEN build existing urls to avoid parent dupe?
+		download_clip
 		if r['subscribe'] == 'yes'
+			puts "Found subscription flag for url #{r['url']}\n"
 			$channel_clips << r['url']
 		end
 	end
@@ -49,27 +55,45 @@ def build_channel_clips
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
 
 	$channel_clips.each do |cc|
+		$download_list ["#{cc}"] = nil
 		uploader =  `youtube-dl #{cc} --get-filename -o \"%(uploader_id)s\"`
 		puts `youtube-dl --get-filename -f 18 ytuser:#{uploader}`
 	end
 
 	# assemble array of existing youtube clips here?
+end
 
-	ytq = $m.query("select url from vscout_url where url like '%youtu%'")
+def build_existing_urls
+
+	ytq = $m.query("select id, url from vscout_url where url like '%youtu%'")
 	ytq.each_hash do |ytc|
-		yurl =  ytc['url'][/watch\?v=(.{11})/,1]
-		puts yurl
+		$existing_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = "#{ytc['id']}"
 	end
 
+	puts $existing_urls.inspect
+
 # I want to initialize an array of existing youtube videos, then compare the array I make here and download only vids that aren't in the existing array.
+# BEWARE of double-collecting parent urls!
 
 end
 
-def download_channel_clips
+#load ALL downloaded clips into a single hash, just don't set parent_url value, if value is nil do conventional download, if not nil do channel clip download?
+
+def download_clip
+=begin
+1. if channel clip, create db row first, then download
+2. if no parent id, regular download
+3. after download, check file and update row
+4. for parent clips, set subscribe to 'dun'
+=end
 end
 
 def get_uploader_id(channel_clip)
 end
 
+def generate_metadata
+end
+
 build_dl_list
-build_channel_clips
+#build_channel_clips
+build_existing_urls
