@@ -16,11 +16,10 @@ require 'time'
 
 abort "You must enter an iso639 language code!" unless ARGV[0]
 src_dir = "/lre14/bin/streaming"
-src_dir = "."
 lang = ARGV[0]
 config_file = "getstream.xml"
 MPLAYER = '/usr/bin/mplayer'
-RECDIR = '/mnt/drobo/12/streaming';
+RECDIR = '/lre14-collection/audio/incoming'
 REC_DURATION = 1700;
 sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
@@ -37,6 +36,7 @@ end
 def download_stream(cmd)
 #add actual download here
 	puts "Download command is #{cmd}\n"
+#	`#{cmd}`
 end
 
 def killprocs(src_name) # <--- change this to src_url after testing! ***
@@ -58,7 +58,7 @@ sources.keys.each do |s|
 	src_url = sources[s][1]
 	killprocs(src_name) # Kill any existing downloads.
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
-	cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{timestring}_#{src_name}_#{lang}.mp3\n"
+	cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{lang}.mp3\n"
 	#fork each source download and record PID in hash
 	src_pid = Process.fork {download_stream(cmd)}
 	sources[s][4] = src_pid

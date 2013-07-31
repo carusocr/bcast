@@ -21,6 +21,7 @@ require 'mysql'
 require 'nokogiri'
 require 'date'
 
+DATADIR="./data"
 abort "Enter database password!" unless ARGV[0]
 $dbpass = ARGV[0]
 #accepts specific date for like statement, or defaults to yesterday.
@@ -37,7 +38,6 @@ def build_parent_clips
 
 	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null limit 1")
 	ytq.each_hash do |r|
-		#puts r['id'], r['subscribe'], r['url']
 		#call download_clip first, THEN build existing urls to avoid parent dupe?
 		download_clip
 		if r['subscribe'] == 'yes'
@@ -65,6 +65,7 @@ def build_download_list
 				add_child_clip_to_database(clip_url, id)
 			end
 		end
+		$m.query("update vscout_url set subscribe = 'dun' where id = #{id}")
 		#stick a loop here to call download clip, passing hash?
 		#no, download
 	end
@@ -102,7 +103,8 @@ def generate_metadata
 end
 
 def add_child_clip_to_database(clip_url, id)
-	puts "insert into vscout_url (url, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',#{id},current_timestamp)\n"
+	$m.query("insert into vscout_url (url,url_md5, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',md5('#{clip_url}'),#{id},current_timestamp)\n")
+	#puts "insert into vscout_url (url, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',#{id},current_timestamp)\n"
 end
 
 build_parent_clips

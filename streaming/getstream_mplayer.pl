@@ -58,7 +58,8 @@ my %srctbl = (pubtalkctfm     => { stream_url => 'http://80.245.113.11:8004',
         brazil_radiomec  => { stream_url => 'http://radioslivres.radiobras.gov.br:8080/mecam.mp3',
                                      iso639   => 'por' },
 
-	      brazil_radnat_brasilia => { stream_url => 'http://radioslivres.radiobras.gov.br:8080/nacionalam.mp3', iso639 => 'por' });
+	      brazil_radnat_brasilia => { stream_url => 'http://radioslivres.radiobras.gov.br:8080/nacionalam.mp3', iso639 => 'por' },
+				uk_ukrp	=>	{ stream_url => 'http://81.20.48.115:80', iso639	=>	'eng'});
 
 my %soutarry = ( transcode => { acodec     => 'mp3',
 				ab         => '128',
