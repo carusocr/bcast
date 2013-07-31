@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<SrcTbl>
+  <SrcDef id="0">
+    <Src>mexico_pandashow</Src>
+    <Url descr="stream_url">http://s9.viastreaming.net:7210</Url>
+    <ISOLangCode descr="iso639">spa</ISOLangCode>
+  </SrcDef>
+  <SrcDef id="1">
+    <Src>colombia_unal</Src>
+    <Url descr="stream_url">http://streaming.unradio.unal.edu.co:8010</Url>
+    <ISOLangCode descr="iso639">spa</ISOLangCode>
+  </SrcDef>
+  <SrcDef id="2">
+    <Src>spain_rne3</Src>
+    <Url descr="stream_url">http://195.10.10.207/rtve/radio3.mp3</Url>
+    <ISOLangCode descr="iso639">spa</ISOLangCode>
+  </SrcDef>
+  <SrcDef id="3">
+    <Src>brazil_radnat_brasilia</Src>
+    <Url descr="stream_url">http://radioslivres.radiobras.gov.br:8080/nacionalam.mp3</Url>
+    <ISOLangCode descr="iso639">por</ISOLangCode>
+  </SrcDef>
+</SrcTbl>
+

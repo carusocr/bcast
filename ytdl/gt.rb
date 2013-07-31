@@ -35,14 +35,14 @@ $downloaded_clips = Hash.new
 
 def build_parent_clips
 
-	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null")
+	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null limit 1")
 	ytq.each_hash do |r|
 		#puts r['id'], r['subscribe'], r['url']
 		#call download_clip first, THEN build existing urls to avoid parent dupe?
 		download_clip
 		if r['subscribe'] == 'yes'
 			puts "Found subscription flag for url #{r['url']}\n"
-			$channel_clip_parents["#{r['url']}"] = ["#{r['id']}"]
+			$channel_clip_parents["#{r['url']}"] = r['id']
 		end
 	end
 
@@ -54,20 +54,19 @@ def build_download_list
 
 	$channel_clip_parents.sort.each do |cc, id|
 		clip_string = cc[/watch\?v=(.{11})/,1]
-		puts clip_string
+		puts "Getting userid and channel clips from #{clip_string}\n"
 		$download_list["#{clip_string}"] = nil
 		uploader = `youtube-dl #{clip_string} --get-filename -o \"%(uploader_id)s\"`
 		puts "Uploader is #{uploader}"
 		`youtube-dl --get-filename -f 18 ytuser:#{uploader}`.split("\n").each do |c|
 			clip_url = c[/(.{11})\.mp4/,1]
-			$download_list["#{clip_url}"] = id unless clip_string == clip_url
+			if clip_url != clip_string
+				$download_list["#{clip_url}"] = id
+				add_child_clip_to_database(clip_url, id)
+			end
 		end
 		#stick a loop here to call download clip, passing hash?
 		#no, download
-		#check download hash!
-	end
-	$download_list.sort_by.each do |clip, id|
-		puts "#{clip} has parent url of #{id}\n"
 	end
 
 	# assemble array of existing youtube clips here?
@@ -77,19 +76,14 @@ def build_existing_urls
 
 	ytq = $m.query("select id, url from vscout_url where url like '%youtu%'")
 	ytq.each_hash do |ytc|
-		$existing_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = "#{ytc['id']}"
+		$existing_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = ytc['id']
 	end
 
 	$existing_urls.sort_by.each do |k, id|
 		puts "#{k} #{id}\n"
 	end
-# I want to initialize an array of existing youtube videos, then compare the array I make here and download only vids that aren't in the existing array.
-# BEWARE of double-collecting parent urls!
-# fixed this possibility by skipping parent url when building download_clip hash, also gave them nil parent_url value
 
 end
-
-#load ALL download-ready clips into a single hash, just don't set parent_url value, if value is nil do conventional download, if not nil do channel clip download?
 
 def download_clip
 =begin
@@ -107,7 +101,10 @@ end
 def generate_metadata
 end
 
+def add_child_clip_to_database(clip_url, id)
+	puts "insert into vscout_url (url, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',#{id},current_timestamp)\n"
+end
+
 build_parent_clips
 build_download_list
-#build_existing_urls
-
+build_existing_urls
