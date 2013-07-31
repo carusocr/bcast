@@ -26,8 +26,8 @@ sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
 
 #parse xml, check langcode first and populate hash only with argv'ed lang
-doc.xpath('//SrcDef/ISOLangCode').each do |node|
-	if node.text =~ /#{lang}/
+doc.xpath("//SrcDef[@lang=\"#{lang}\"]/Download").each do |node|
+	if node.text =~ /y/
 		srcinfo = node.xpath('parent::node()').text.split("\n")
 		srcinfo.map{|x| x.strip!}
 		sources["#{node.xpath('../@id')}"] = (srcinfo.reject{|x| x.length==0 || x == lang})
@@ -54,7 +54,6 @@ end
 # kick off new process.
 
 sources.keys.each do |s|
-
 	src_name = sources[s][0]
 	src_url = sources[s][1]
 	killprocs(src_name) # Kill any existing downloads.
@@ -62,6 +61,6 @@ sources.keys.each do |s|
 	cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{timestring}_#{src_name}_#{lang}.mp3\n"
 	#fork each source download and record PID in hash
 	src_pid = Process.fork {download_stream(cmd)}
-	sources[s][3] = src_pid
+	sources[s][4] = src_pid
 
 end
