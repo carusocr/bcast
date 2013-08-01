@@ -30,13 +30,13 @@ $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 # do I want to connect to database outside of the methods?
 $m = Mysql.new "localhost", "vscout_user", "#{$dbpass}", "vscout"
 $channel_clip_parents = Hash.new
-$download_list = Hash.new
+$download_urls = Hash.new
 $existing_urls = Hash.new
 $downloaded_clips = Hash.new
 
 def build_parent_clips
 
-	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null limit 1")
+	ytq = $m.query("select id, subscribe, url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%' and parent_url is null")
 	ytq.each_hash do |r|
 		#call download_clip first, THEN build existing urls to avoid parent dupe?
 		download_clip
@@ -48,7 +48,7 @@ def build_parent_clips
 
 end	
 
-def build_download_list
+def build_subscription_clips
 	
 	# what's the best way to definitely exclude urls where I've already downloaded their channel clips? Maybe set subscribe field to something other than yes/no.
 
@@ -61,26 +61,22 @@ def build_download_list
 		`youtube-dl --get-filename -f 18 ytuser:#{uploader}`.split("\n").each do |c|
 			clip_url = c[/(.{11})\.mp4/,1]
 			if clip_url != clip_string
-				$download_list["#{clip_url}"] = id
 				add_child_clip_to_database(clip_url, id)
 			end
 		end
 		$m.query("update vscout_url set subscribe = 'dun' where id = #{id}")
-		#stick a loop here to call download clip, passing hash?
-		#no, download
 	end
 
 	# assemble array of existing youtube clips here?
 end
 
-def build_existing_urls
+def build_download_list
 
-	ytq = $m.query("select id, url from vscout_url where url like '%youtu%'")
+	ytq = $m.query("select id, url from vscout_url where url like '%youtu%' and media_file is NULL and date_found like '#{$daterange}%'")
 	ytq.each_hash do |ytc|
-		$existing_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = ytc['id']
+		$download_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = ytc['id']
 	end
-
-	$existing_urls.sort_by.each do |k, id|
+	$download_urls.sort_by.each do |k, id|
 		puts "#{k} #{id}\n"
 	end
 
@@ -111,5 +107,7 @@ def add_child_clip_to_database(clip_url, id)
 end
 
 build_parent_clips
+build_subscription_clips
 build_download_list
-build_existing_urls
+# each loop down here using array made with build_download_list, calling download_clip and then update database
+#need to add some better dupe checks...maybe when building children clips, compare against existing clips to make sure they're not already in there?
