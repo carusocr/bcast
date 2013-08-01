@@ -103,8 +103,11 @@ def generate_metadata
 end
 
 def add_child_clip_to_database(clip_url, id)
-	$m.query("insert into vscout_url (url,url_md5, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',md5('#{clip_url}'),#{id},current_timestamp)\n")
-	#puts "insert into vscout_url (url, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',#{id},current_timestamp)\n"
+	begin
+		$m.query("insert into vscout_url (url,url_md5, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',md5('#{clip_url}'),#{id},current_timestamp)")
+#puts "insert into vscout_url (url, parent_url, date_found) values ('http://youtube.com/watch?v=#{clip_url}',#{id},current_timestamp)\n"
+	rescue Mysql::Error
+	end
 end
 
 build_parent_clips
