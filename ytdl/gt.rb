@@ -81,16 +81,24 @@ end
 
 def download_clip(url,id)
 
-	ofil = "#{DATADIR}/" + "VVC" + format("%06d",id) + ".mp4"
+	video_clip = "VVC" + format("%06d",id) + ".mp4"
+	ofil = "#{DATADIR}/" + video_clip
 	puts "Download command is youtube-dl -w -f 18 -o #{ofil} #{url}\n"
-	`youtube-dl -w -f 18 -o #{ofil} #{url}`
+	#`youtube-dl -w -f 18 -o #{ofil} #{url}`
+	if File.exist?(ofil)
+		puts "#{url} successfully downloaded as #{ofil}\n"
+		generate_metadata(ofil)
+	#add rescue for fail here
+	end
 	#add filecheck, error handling, metadata here
 
 end
 
-def generate_metadata(video_clip)
+def generate_metadata(ofil)
+	info = `mp4info #{ofil}`.split("\n")
+	duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
+	puts info[3]
 =begin
-	check for file existence
 	check file type
 	get codec and duration info
 	update database
