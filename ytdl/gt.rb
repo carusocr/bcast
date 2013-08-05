@@ -4,10 +4,13 @@
 # needed additions: Log file.
 
 require 'mysql'
-require 'nokogiri'
+require 'logger'
 require 'date'
+require 'nokogiri' #change db password to be in xml file instead of argv...or ldcdb?
 
-DATADIR="./data"
+DATADIR = "./data"
+LOGDIR = "."
+$log = Logger.new('vast_downloader.log')
 abort "Enter database password!" unless ARGV[0]
 $dbpass = ARGV[0]
 #accepts specific date for like statement, or defaults to yesterday.
@@ -38,9 +41,11 @@ def build_subscription_clips
 	$channel_clip_parents.sort.each do |cc, id|
 		clip_string = cc[/watch\?v=(.{11})/,1]
 		puts "Getting userid and channel clips from #{clip_string}\n"
+		$log.info "Getting userid and channel clips from #{clip_string}\n"
 		$download_urls["#{clip_string}"] = nil
 		uploader = `youtube-dl #{clip_string} --get-filename -o \"%(uploader_id)s\"`
 		puts "Uploader is #{uploader}"
+		$log.info "Uploader is #{uploader}\n"
 		`youtube-dl --get-filename -f 18 ytuser:#{uploader}`.split("\n").each do |c|
 			clip_url = c[/(.{11})\.mp4/,1]
 			if (clip_url != clip_string) && $existing_urls.include?(clip_url) == false
@@ -60,6 +65,7 @@ def build_downloads
 	end
 	$download_urls.sort_by.each do |url, id|
 		puts "Downloading #{url} #{id}\n"
+		$log.info "Downloading #{url}..."
 		download_clip(url,id)
 	end
 
@@ -72,10 +78,10 @@ def download_clip(url,id)
 	# download if file exists, go straight to metadata otherwise?
 	#`youtube-dl -w -f 18 -o #{ofil} #{url}`
 	if File.exist?("#{DATADIR}/#{video_clip}")
-		puts "#{url} successfully downloaded as #{video_clip}\n"
+		$log.info "#{url} successfully downloaded as #{video_clip}\n"
 		generate_metadata(video_clip,id)
 	else 
-		puts "Download failed!\n"
+		$log.info "Download of #{url} FAILED!\n"
 		$m.query("update vscout_url set media_file = 'fail' where id = #{id}")
 	end
 
@@ -89,8 +95,10 @@ def generate_metadata(video_clip,id)
 		codec_audio = info[4][/audio(.+), \d+\.\d+ secs,/,1].strip!
 		duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
 		$m.query("update vscout_url set codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}")
+		$log.info "Metadata: codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}\n"
 	rescue
 		$m.query("update vscout_url set codec = 'fail', duration = 'fail', media_file = 'fail' where id = #{id}")
+		log.info "Metadata generation FAILED.\n"
 	end
 
 end
