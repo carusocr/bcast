@@ -1,21 +1,6 @@
 #!/usr/bin/env ruby
 
-=begin
-
-Script to download youtube videos, including all videos from a user's channel. 
-
-1. Script gets previous day's scouted youtube clips, builds hash of urls and uses db ids as fileroots.
-2. Checks if any have the 'get channel' flag set, builds array of UNIQUE usernames.
-3. Calls download_youtube for each download url in first array.
-3a. Download method should first check data directory to make sure that output file doesn't exist.
-3b. Downloads clip.
-3c. Checks filetype, updates database with value.
-4, For array of userchannel clips, need to make sure that none are already in db.
-5. Once this is done, need to create vscout_url entry for each clip to be downloaded, BEFORE downloading.
-6. After this is done follow steps 3a-3c.
-7. Postprocessing happens later...codec, md5sum, duration. Maybe do it right after downloads?
-
-=end
+# Script to download youtube videos, including all videos from a user's channel. 
 
 require 'mysql'
 require 'nokogiri'
@@ -82,22 +67,23 @@ end
 def download_clip(url,id)
 
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
-	ofil = "#{DATADIR}/" + video_clip
-	puts "Download command is youtube-dl -w -f 18 -o #{ofil} #{url}\n"
+	puts "Download command is youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}\n"
 	#`youtube-dl -w -f 18 -o #{ofil} #{url}`
-	if File.exist?(ofil)
-		puts "#{url} successfully downloaded as #{ofil}\n"
-		generate_metadata(ofil)
+	if File.exist?("#{DATADIR}/#{video_clip}")
+		puts "#{url} successfully downloaded as #{video_clip}\n"
+		generate_metadata(video_clip)
 	#add rescue for fail here
 	end
 	#add filecheck, error handling, metadata here
 
 end
 
-def generate_metadata(ofil)
-	info = `mp4info #{ofil}`.split("\n")
+def generate_metadata(video_clip)
+	info = `mp4info #{DATADIR}/#{video_clip}`.split("\n")
+	codec_video = info[3][/video(.+), \d+\.\d+ secs,/,1].strip!
+	codec_audio = info[4][/audio(.+), \d+\.\d+ secs,/,1].strip!
 	duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
-	puts info[3]
+	puts "Clip #{video_clip} duration #{duration} codec #{codec_video}/#{codec_audio}\n"
 =begin
 	check file type
 	get codec and duration info
