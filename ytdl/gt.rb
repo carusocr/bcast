@@ -65,7 +65,7 @@ def build_downloads
 	end
 	$download_urls.sort_by.each do |url, id|
 		puts "Downloading #{url} #{id}\n"
-		$log.info "Downloading #{url}..."
+		$log.info "Downloading ID #{id}, #{url}..."
 		download_clip(url,id)
 	end
 
@@ -76,7 +76,7 @@ def download_clip(url,id)
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
 	puts "Download command is youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}\n"
 	# download if file exists, go straight to metadata otherwise?
-	#`youtube-dl -w -f 18 -o #{ofil} #{url}`
+	`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}`
 	if File.exist?("#{DATADIR}/#{video_clip}")
 		$log.info "#{url} successfully downloaded as #{video_clip}\n"
 		generate_metadata(video_clip,id)
@@ -91,10 +91,11 @@ def generate_metadata(video_clip,id)
 
 	begin
 		info = `mp4info #{DATADIR}/#{video_clip}`.split("\n")
+		md5 = `md5sum #{DATADIR}/#{video_clip}`.split[0]
 		codec_video = info[3][/video(.+), \d+\.\d+ secs,/,1].strip!
 		codec_audio = info[4][/audio(.+), \d+\.\d+ secs,/,1].strip!
 		duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
-		$m.query("update vscout_url set codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}")
+		$m.query("update vscout_url set codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}', md5sum = '#{md5}' where id = #{id}")
 		$log.info "Metadata: codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}\n"
 	rescue
 		$m.query("update vscout_url set codec = 'fail', duration = 'fail', media_file = 'fail' where id = #{id}")
