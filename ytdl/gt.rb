@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Script to download youtube videos, including all videos from a user's channel. 
-# needed additions: Log file.
+# needed additions: ldcdb password checking, or xml config file for the same
 
 require 'mysql'
 require 'logger'
