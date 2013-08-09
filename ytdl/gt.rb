@@ -12,12 +12,12 @@ DATADIR = "./data"
 LOGDIR = "."
 $log = Logger.new('vast_downloader.log')
 abort "Enter database password!" unless ARGV[0]
-$dbpass = ARGV[0]
+dbpass = ARGV[0]
 #accepts specific date for like statement, or defaults to yesterday.
 $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 
 # do I want to connect to database outside of the methods?
-$m = Mysql.new "localhost", "vscout_user", "#{$dbpass}", "vscout"
+$m = Mysql.new "localhost", "vscout_user", "#{dbpass}", "vscout"
 $channel_clip_parents = Hash.new
 $download_urls = Hash.new
 $existing_urls = []
