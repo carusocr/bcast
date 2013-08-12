@@ -48,5 +48,71 @@
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
   </SrcDef>
+  <SrcDef id="8" lang="spa">
+    <Src>COLOMBIA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="9" lang="spa">
+    <Src>CHILE1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="10" lang="spa">
+    <Src>ARGENTINA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="11" lang="spa">
+    <Src>ECUADOR1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="12" lang="spa">
+    <Src>CUBA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>car</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="13" lang="spa">
+    <Src>PERU1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="14" lang="spa">
+    <Src>VENEZUELA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="15" lang="spa">
+    <Src>MEXICO2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>mca</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="16" lang="spa">
+    <Src>CHILE2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="17" lang="spa">
+    <Src>SPAIN2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>eur</Dialect>
+		<Download>n</Download>
+  </SrcDef>
+  <SrcDef id="18" lang="por">
+    <Src>BRAZIL2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>brz</Dialect>
+		<Download>n</Download>
+  </SrcDef>
 </SrcTbl>
 
