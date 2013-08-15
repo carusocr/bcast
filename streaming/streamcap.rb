@@ -15,10 +15,11 @@ require 'nokogiri'
 require 'time'
 
 abort "You must enter an iso639 language code!" unless ARGV[0]
-src_dir = "/lre14/bin/streaming"
+src_dir = "."
 lang = ARGV[0]
 config_file = "getstream.xml"
 MPLAYER = '/usr/bin/mplayer'
+RTMPDUMP = '/usr/local/bin/rtmpdump'
 RECDIR = '/lre14-collection/audio/incoming'
 REC_DURATION = 1700;
 sources = Hash.new
@@ -33,10 +34,17 @@ doc.xpath("//SrcDef[@lang=\"#{lang}\"]/Download").each do |node|
 	end
 end
 
-def download_stream(cmd)
-#add actual download here
-	puts "Download command is #{cmd}\n"
-#	`#{cmd}`
+def download_stream(downloader,timestring,src_name,src_url,lang)
+
+	if downloader == "mplayer"
+		cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{lang}.mp3\n"
+		puts cmd
+	elsif downloader == "rtmpdump"
+		cmd = "#{RTMPDUMP} -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{lang}.flv -B #{REC_DURATION}\n"
+		puts cmd
+		`#{cmd}`
+	end
+
 end
 
 def killprocs(src_name) # <--- change this to src_url after testing! ***
@@ -45,6 +53,7 @@ def killprocs(src_name) # <--- change this to src_url after testing! ***
 	targets.each do |t|
 		# kill procnum
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
+		# no, really...this is where you kill the processes!
 	end
 
 end
@@ -54,13 +63,14 @@ end
 # kick off new process.
 
 sources.keys.each do |s|
+
 	src_name = sources[s][0]
 	src_url = sources[s][1]
+	downloader = sources[s][4]
 	killprocs(src_name) # Kill any existing downloads.
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
-	cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{lang}.mp3\n"
 	#fork each source download and record PID in hash
-	src_pid = Process.fork {download_stream(cmd)}
-	sources[s][4] = src_pid
+	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang)}
+	sources[s][5] = src_pid
 
 end
