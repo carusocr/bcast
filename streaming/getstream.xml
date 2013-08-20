@@ -5,48 +5,147 @@
     <Url descr="stream_url">http://s9.viastreaming.net:7210</Url>
 		<Dialect>mca</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="1" lang="spa">
     <Src>colombia_unal</Src>
     <Url descr="stream_url">http://streaming.unradio.unal.edu.co:8010</Url>
 		<Dialect>lac</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="2" lang="spa">
     <Src>spain_rne3</Src>
     <Url descr="stream_url">http://195.10.10.207/rtve/radio3.mp3</Url>
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="3" lang="por">
     <Src>brazil_radnat_brasilia</Src>
     <Url descr="stream_url">http://radioslivres.radiobras.gov.br:8080/nacionalam.mp3</Url>
 		<Dialect>brz</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="4" lang="spa">
     <Src>dr_amistad</Src>
     <Url descr="stream_url">http://arsradio.tv.com:8040</Url>
 		<Dialect>car</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="5" lang="por">
     <Src>brazil_radiomec</Src>
     <Url descr="stream_url">http://radioslivres.radiobras.gov.br:8080/mecam.mp3</Url>
 		<Dialect>brz</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="6" lang="spa">
     <Src>pr_universidad</Src>
     <Url descr="stream_url">http://136.145.101.15:8062</Url>
 		<Dialect>car</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
   </SrcDef>
   <SrcDef id="7" lang="spa">
     <Src>spain_onda_cero</Src>
     <Url descr="stream_url">http://stream.ondaceronoroeste.es:8000/ondacero.mp3</Url>
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+  </SrcDef>
+  <SrcDef id="8" lang="spa">
+    <Src>COLOMBIA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="9" lang="spa">
+    <Src>CHILE1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="10" lang="spa">
+    <Src>ARGENTINA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="11" lang="spa">
+    <Src>ECUADOR1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="12" lang="spa">
+    <Src>CUBA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>car</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="13" lang="spa">
+    <Src>PERU1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="14" lang="spa">
+    <Src>VENEZUELA1</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="15" lang="spa">
+    <Src>MEXICO2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>mca</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="16" lang="spa">
+    <Src>CHILE2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>lac</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="17" lang="spa">
+    <Src>SPAIN2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>eur</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="18" lang="por">
+    <Src>BRAZIL2</Src>
+    <Url descr="stream_url">SCOLA</Url>
+		<Dialect>brz</Dialect>
+		<Download>n</Download>
+		<Cmd>broadcast</Cmd>
+  </SrcDef>
+  <SrcDef id="19" lang="eng">
+    <Src>LBC973</Src>
+    <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC973</Url>
+		<Dialect>gbe</Dialect>
+		<Download>y</Download>
+		<Cmd>rtmpdump</Cmd>
+  </SrcDef>
+  <SrcDef id="20" lang="eng">
+    <Src>LBC1152</Src>
+    <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC1152</Url>
+		<Dialect>gbe</Dialect>
+		<Download>y</Download>
+		<Cmd>rtmpdump</Cmd>
   </SrcDef>
 </SrcTbl>
 
