@@ -18,10 +18,8 @@ abort "You must enter an iso639 language code!" unless ARGV[0]
 src_dir = "."
 lang = ARGV[0]
 config_file = "getstream.xml"
-MPLAYER = '/usr/bin/mplayer'
-RTMPDUMP = '/usr/local/bin/rtmpdump'
 RECDIR = '/lre14-collection/audio/incoming'
-REC_DURATION = 1200;
+REC_DURATION = 2400;
 sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
 
@@ -30,17 +28,17 @@ doc.xpath("//SrcDef[@lang=\"#{lang}\"]/Download").each do |node|
 	if node.text =~ /y/
 		srcinfo = node.xpath('parent::node()').text.split("\n")
 		srcinfo.map{|x| x.strip!}
-		sources["#{node.xpath('../@id')}"] = (srcinfo.reject{|x| x.length==0 || x == lang})
+		sources["#{node.xpath('../@id')}"] = (srcinfo.reject{|x| x.length==0})
 	end
 end
 
 def download_stream(downloader,timestring,src_name,src_url,lang,dialect)
 
 	if downloader == "mplayer"
-		cmd = "#{MPLAYER} #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.mp3\n"
+		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.mp3\n"
 		`#{cmd}`
 	elsif downloader == "rtmpdump"
-		cmd = "#{RTMPDUMP} -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.flv -B #{REC_DURATION}\n"
+		cmd = "mplayer -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.flv -B #{REC_DURATION}\n"
 		`#{cmd}`
 	end
 
@@ -53,7 +51,6 @@ def killprocs(src_name) # <--- change this to src_url after testing! ***
 		# kill procnum
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
 		`kill #{t}`
-		# no, really...this is where you kill the processes!
 	end
 
 end
@@ -66,12 +63,12 @@ sources.keys.each do |s|
 
 	src_name = sources[s][0]
 	src_url = sources[s][1]
-	downloader = sources[s][4]
-	killprocs(src_name) # Kill any existing downloads.
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
 	dialect = sources[s][2]
+	downloader = sources[s][3]
+	killprocs(src_name) # Kill any existing downloads.
 	#fork each source download and record PID in hash
 	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang,dialect)}
-	sources[s][5] = src_pid
+	sources[s][4] = src_pid
 
 end
