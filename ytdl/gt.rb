@@ -99,7 +99,7 @@ def generate_metadata(video_clip,id)
 		$log.info "Metadata: codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}\n"
 	rescue
 		$m.query("update vscout_url set codec = 'fail', duration = 'fail', media_file = 'fail' where id = #{id}")
-		log.info "Metadata generation FAILED.\n"
+		$log.info "Metadata generation FAILED.\n"
 	end
 
 end
