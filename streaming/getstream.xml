@@ -154,5 +154,68 @@
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
   </SrcDef>
+  <SrcDef id="22" lang="pol">
+    <Src>radio_pin</Src>
+    <Url descr="stream_url">http://stream4.nadaje.com/radiopin</Url>
+		<Dialect>pol</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+  </SrcDef>
+	<SrcDef id="23" lang="pol">
+		<Src>radio_via</Src>
+		<Url descr="stream_url">http://62.133.128.18:8040/</Url>
+		<Dialect>pol</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="24" lang="pol">
+		<Src>radio_jasna_gora</Src>
+		<Url descr="stream_url">http://shot4.inten.pl:8252/</Url>
+		<Dialect>pol</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="25" lang="pol">
+		<Src>radio_bogoria</Src>
+		<Url descr="stream_url">http://s6.radiohost.pl:8888/</Url>
+		<Dialect>pol</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="26" lang="pol">
+		<Src>radio_oko</Src>
+		<Url descr="stream_url">http://stream2.nadaje.com:8094/</Url>
+		<Dialect>pol</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="27" lang="rus">
+		<Src>radio_mockba_fm</Src>
+		<Url descr="stream_url">http://bcast.krc.ru:8000/gm-fm-128</Url>
+		<Dialect>rus</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="28" lang="rus">
+		<Src>radio_russia</Src>
+		<Url descr="stream_url">mms://live.rfn.ru/radiorussia</Url>
+		<Dialect>rus</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="29" lang="rus">
+		<Src>radio_culture</Src>
+		<Url descr="stream_url">mms://live.rfn.ru/rcult</Url>
+		<Dialect>rus</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
+	<SrcDef id="30" lang="rus">
+		<Src>radio_blago</Src>
+		<Url descr="stream_url">mms://live.radioblago.ru:3280</Url>
+		<Dialect>rus</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+	</SrcDef>
 </SrcTbl>
 

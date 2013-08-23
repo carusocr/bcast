@@ -36,10 +36,12 @@ def download_stream(downloader,timestring,src_name,src_url,lang,dialect)
 
 	if downloader == "mplayer"
 		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.mp3\n"
-		`#{cmd}`
+		puts cmd
+#		`#{cmd}`
 	elsif downloader == "rtmpdump"
-		cmd = "mplayer -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.flv -B #{REC_DURATION}\n"
-		`#{cmd}`
+		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.flv -B #{REC_DURATION}\n"
+		puts cmd
+#		`#{cmd}`
 	end
 
 end
@@ -52,7 +54,7 @@ def killprocs(src_name) # <--- change this to src_url after testing! ***
 		# kill procnum
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
 		Process.kill("KILL",t.to_i)
-		#`kill #{t}`
+		sleep 5
 	end
 
 end
@@ -65,6 +67,9 @@ sources.keys.each do |s|
 
 	src_name = sources[s][0]
 	src_url = sources[s][1]
+	if src_url =~ /^mms/
+		puts "mms!"
+	end
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
 	dialect = sources[s][2]
 	downloader = sources[s][4]
