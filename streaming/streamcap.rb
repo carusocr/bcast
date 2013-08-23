@@ -19,7 +19,7 @@ src_dir = "."
 lang = ARGV[0]
 config_file = "getstream.xml"
 RECDIR = '/lre14-collection/audio/incoming'
-REC_DURATION = 2400;
+REC_DURATION = 1500;
 sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
 
@@ -46,11 +46,13 @@ end
 
 def killprocs(src_name) # <--- change this to src_url after testing! ***
 
-	targets = (`ps -ef | grep '#{src_name}' | awk '{print $2}'`).split
+	targets = (`ps -ef | grep -v grep | grep '#{src_name}' | awk '{print $2}'`).split
 	targets.each do |t|
+		puts `ps -ef | grep #{t}`
 		# kill procnum
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
-		`kill #{t}`
+		Process.kill("KILL",t.to_i)
+		#`kill #{t}`
 	end
 
 end
@@ -65,10 +67,10 @@ sources.keys.each do |s|
 	src_url = sources[s][1]
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
 	dialect = sources[s][2]
-	downloader = sources[s][3]
+	downloader = sources[s][4]
 	killprocs(src_name) # Kill any existing downloads.
 	#fork each source download and record PID in hash
 	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang,dialect)}
-	sources[s][4] = src_pid
+	sources[s][5] = src_pid
 
 end
