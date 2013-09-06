@@ -20,6 +20,7 @@ lang = ARGV[0]
 config_file = "getstream.xml"
 RECDIR = '/lre14-collection/audio/incoming'
 REC_DURATION = 1500;
+#add duration to config file so different sources can have different durations
 sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
 
@@ -37,11 +38,11 @@ def download_stream(downloader,timestring,src_name,src_url,lang,dialect)
 	if downloader == "mplayer"
 		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.mp3\n"
 		puts cmd
-#		`#{cmd}`
+		`#{cmd}`
 	elsif downloader == "rtmpdump"
-		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.flv -B #{REC_DURATION}\n"
+		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.aac -B #{REC_DURATION}\n"
 		puts cmd
-#		`#{cmd}`
+		`#{cmd}`
 	end
 
 end

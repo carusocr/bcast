@@ -6,6 +6,7 @@
 		<Dialect>mca</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="1" lang="spa">
     <Src>colombia_unal</Src>
@@ -13,6 +14,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="2" lang="spa">
     <Src>spain_rne3</Src>
@@ -20,6 +22,7 @@
 		<Dialect>eur</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="3" lang="por">
     <Src>brazil_radnat_brasilia</Src>
@@ -27,6 +30,7 @@
 		<Dialect>brz</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="4" lang="spa">
     <Src>dr_amistad</Src>
@@ -34,6 +38,7 @@
 		<Dialect>car</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="5" lang="por">
     <Src>brazil_radiomec</Src>
@@ -41,6 +46,7 @@
 		<Dialect>brz</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="6" lang="spa">
     <Src>pr_universidad</Src>
@@ -48,6 +54,7 @@
 		<Dialect>car</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="7" lang="spa">
     <Src>spain_onda_cero</Src>
@@ -55,6 +62,7 @@
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="8" lang="spa">
     <Src>COLOMBIA1</Src>
@@ -62,6 +70,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="9" lang="spa">
     <Src>CHILE1</Src>
@@ -69,6 +78,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="10" lang="spa">
     <Src>ARGENTINA1</Src>
@@ -76,6 +86,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="11" lang="spa">
     <Src>ECUADOR1</Src>
@@ -83,6 +94,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="12" lang="spa">
     <Src>CUBA1</Src>
@@ -90,6 +102,7 @@
 		<Dialect>car</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="13" lang="spa">
     <Src>PERU1</Src>
@@ -97,6 +110,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="14" lang="spa">
     <Src>VENEZUELA1</Src>
@@ -104,6 +118,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="15" lang="spa">
     <Src>MEXICO2</Src>
@@ -111,6 +126,7 @@
 		<Dialect>mca</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="16" lang="spa">
     <Src>CHILE2</Src>
@@ -118,6 +134,7 @@
 		<Dialect>lac</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="17" lang="spa">
     <Src>SPAIN2</Src>
@@ -125,6 +142,7 @@
 		<Dialect>eur</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="18" lang="por">
     <Src>BRAZIL2</Src>
@@ -132,20 +150,23 @@
 		<Dialect>brz</Dialect>
 		<Download>n</Download>
 		<Cmd>broadcast</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="19" lang="eng">
     <Src>LBC973</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC973</Url>
 		<Dialect>gbe</Dialect>
-		<Download>n</Download>
+		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
+		<Ext>flv</Ext>
   </SrcDef>
   <SrcDef id="20" lang="eng">
     <Src>LBC1152</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC1152</Url>
 		<Dialect>gbe</Dialect>
-		<Download>n</Download>
+		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
+		<Ext>flv</Ext>
   </SrcDef>
   <SrcDef id="21" lang="pol">
     <Src>radio_tok</Src>
@@ -153,6 +174,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="22" lang="pol">
     <Src>radio_pin</Src>
@@ -160,6 +182,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
   </SrcDef>
 	<SrcDef id="23" lang="pol">
 		<Src>radio_via</Src>
@@ -167,6 +190,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="24" lang="pol">
 		<Src>radio_jasna_gora</Src>
@@ -174,6 +198,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="25" lang="pol">
 		<Src>radio_bogoria</Src>
@@ -181,6 +206,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="26" lang="pol">
 		<Src>radio_oko</Src>
@@ -188,6 +214,7 @@
 		<Dialect>pol</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="27" lang="rus">
 		<Src>radio_mockba_fm</Src>
@@ -195,6 +222,7 @@
 		<Dialect>rus</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="28" lang="rus">
 		<Src>radio_russia</Src>
@@ -202,6 +230,7 @@
 		<Dialect>rus</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="29" lang="rus">
 		<Src>radio_culture</Src>
@@ -209,6 +238,7 @@
 		<Dialect>rus</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="30" lang="rus">
 		<Src>radio_blago</Src>
@@ -216,6 +246,7 @@
 		<Dialect>rus</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
 	</SrcDef>
 </SrcTbl>
 

@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-
+#!/usr/bin/env ruby 
 # Script to download youtube videos, including all videos from a user's channel. 
 # needed additions: ldcdb password checking, or xml config file for the same
 
@@ -8,7 +7,7 @@ require 'logger'
 require 'date'
 require 'nokogiri' #change db password to be in xml file instead of argv...or ldcdb?
 
-DATADIR = "./data"
+DATADIR = "/vast/src"
 LOGDIR = "."
 $log = Logger.new('vast_downloader.log')
 abort "Enter database password!" unless ARGV[0]
@@ -17,7 +16,7 @@ dbpass = ARGV[0]
 $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 
 # do I want to connect to database outside of the methods?
-$m = Mysql.new "localhost", "vscout_user", "#{dbpass}", "vscout"
+$m = Mysql.new "dbm.ldc.upenn.edu", "vast", "#{dbpass}", "vast"
 $channel_clip_parents = Hash.new
 $download_urls = Hash.new
 $existing_urls = []
@@ -76,7 +75,7 @@ def download_clip(url,id)
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
 	puts "Download command is youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}\n"
 	# download if file exists, go straight to metadata otherwise?
-	`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}`
+	`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} youtube.com/watch?v=#{url}`
 	if File.exist?("#{DATADIR}/#{video_clip}")
 		$log.info "#{url} successfully downloaded as #{video_clip}\n"
 		generate_metadata(video_clip,id)
@@ -90,15 +89,22 @@ end
 def generate_metadata(video_clip,id)
 
 	begin
+		#needed to add check to see if vid or aud is reported first
 		info = `mp4info #{DATADIR}/#{video_clip}`.split("\n")
 		md5 = `md5sum #{DATADIR}/#{video_clip}`.split[0]
-		codec_video = info[3][/video(.+), \d+\.\d+ secs,/,1].strip!
-		codec_audio = info[4][/audio(.+), \d+\.\d+ secs,/,1].strip!
-		duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
+  	if info[3] =~ /video/
+   	 codec_video = info[3][/video(.+), \d+\.\d+ secs,/,1].strip!
+   	 codec_audio = info[4][/audio(.+), \d+\.\d+ secs,/,1].strip!
+   	 duration = info[4][/, (\d+\.\d+) secs,/,1].to_f.round
+  	else
+   	 codec_video = info[4][/video(.+), \d+\.\d+ secs,/,1].strip!
+   	 codec_audio = info[3][/audio(.+), \d+\.\d+ secs,/,1].strip!
+   	 duration = info[3][/, (\d+\.\d+) secs,/,1].to_f.round
+  	end
 		$m.query("update vscout_url set codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}', md5sum = '#{md5}' where id = #{id}")
 		$log.info "Metadata: codec = '#{codec_video}/#{codec_audio}', duration = #{duration}, media_file = '#{video_clip}' where id = #{id}\n"
 	rescue
-		$m.query("update vscout_url set codec = 'fail', duration = 'fail', media_file = 'fail' where id = #{id}")
+		$m.query("update vscout_url set codec = 'fail', duration = 'fail',md5sum = 'fail' where id = #{id}")
 		$log.info "Metadata generation FAILED.\n"
 	end
 
