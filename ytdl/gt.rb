@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby 
-# Script to download youtube videos, including all videos from a user's channel. 
+# Script to download youtube and vimeo videos, including all clips from a user's channel. 
 # needed additions: ldcdb password checking, or xml config file for the same
+# 24 July 2013
+# Author: Chris Caruso
 
 require 'mysql'
 require 'logger'
@@ -58,9 +60,13 @@ def build_subscription_clips
 end
 
 def build_downloads
-	ytq = $m.query("select id, url from vscout_url where url like '%youtu%' and (media_file is NULL or media_file = 'fail') and date_found like '#{$daterange}%'")
-	ytq.each_hash do |ytc|
-		$download_urls["#{ytc['url'][/watch\?v=(.{11})/,1]}"] = ytc['id']
+	ytq = $m.query("select id, url from vscout_url where (url like '%youtu%' or url like '%vimeo%') and (media_file is NULL or media_file = 'fail') and date_found like '#{$daterange}%'")
+	ytq.each_hash do |clip|
+		if clip['url'] =~ /youtu/
+			$download_urls["#{clip['url'][/watch\?v=(.{11})/,1]}"] = clip['id']
+		elsif clip['url'] =~ /vimeo/
+			$download_urls["#{clip['url'][/vimeo\.com\/(\d+)/,1]}"] = clip['id']
+		end
 	end
 	$download_urls.sort_by.each do |url, id|
 		puts "Downloading #{url} #{id}\n"
@@ -73,14 +79,16 @@ end
 def download_clip(url,id)
 
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
-	puts "Download command is youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} #{url}\n"
-	# download if file exists, go straight to metadata otherwise?
-	`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} youtube.com/watch?v=#{url}`
+	if url =~ /^\d{4,10}$/
+		`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} vimeo.com/#{url}`
+	elsif url =~ /^.{11}$/
+		`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} youtube.com/watch?v=#{url}`
+	end
 	if File.exist?("#{DATADIR}/#{video_clip}")
 		$log.info "#{url} successfully downloaded as #{video_clip}\n"
 		generate_metadata(video_clip,id)
 	else 
-		$log.info "Download of #{url} FAILED!\n"
+		$log.info "Download of #{url} failed!\n"
 		$m.query("update vscout_url set media_file = 'fail' where id = #{id}")
 	end
 
