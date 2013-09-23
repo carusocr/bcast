@@ -248,5 +248,21 @@
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
+	<SrcDef id="31" lang="eng">
+		<Src>bfbs1</Src>
+		<Url descr="stream_url">http://icy-e-04.sharp-stream.com:80/ssvcbfbs1.mp3</Url>
+		<Dialect>eng</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
+	</SrcDef>
+  <SrcDef id="32" lang="eng">
+    <Src>bbc_worldservice</Src>
+    <Url descr="stream_url">mms://livewmstream-ws.bbc.co.uk.edgestreams.net/reflector:43021</Url>
+    <Dialect>eng</Dialect>
+    <Download>y</Download>
+    <Cmd>mplayer</Cmd>
+    <Ext>mp3</Ext>
+  </SrcDef>
 </SrcTbl>
 

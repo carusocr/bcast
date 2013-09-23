@@ -10,14 +10,13 @@ require 'date'
 require 'nokogiri' #change db password to be in xml file instead of argv...or ldcdb?
 
 DATADIR = "/vast/src"
-LOGDIR = "."
+LOGDIR = "/vast"
 $log = Logger.new('vast_downloader.log')
 abort "Enter database password!" unless ARGV[0]
 dbpass = ARGV[0]
 #accepts specific date for like statement, or defaults to yesterday.
 $daterange = ARGV[1] ? ARGV[1] : Date.today-1
 
-# do I want to connect to database outside of the methods?
 $m = Mysql.new "dbm.ldc.upenn.edu", "vast", "#{dbpass}", "vast"
 $channel_clip_parents = Hash.new
 $download_urls = Hash.new
