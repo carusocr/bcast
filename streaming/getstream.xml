@@ -20,7 +20,7 @@
     <Src>spain_rne3</Src>
     <Url descr="stream_url">http://195.10.10.207/rtve/radio3.mp3</Url>
 		<Dialect>eur</Dialect>
-		<Download>n</Download>
+		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
   </SrcDef>
@@ -155,7 +155,7 @@
   <SrcDef id="19" lang="eng">
     <Src>LBC973</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC973</Url>
-		<Dialect>gbe</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
@@ -163,7 +163,7 @@
   <SrcDef id="20" lang="eng">
     <Src>LBC1152</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC1152</Url>
-		<Dialect>gbe</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
@@ -228,7 +228,7 @@
 		<Src>radio_russia</Src>
 		<Url descr="stream_url">mms://live.rfn.ru/radiorussia</Url>
 		<Dialect>rus</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -236,7 +236,7 @@
 		<Src>radio_culture</Src>
 		<Url descr="stream_url">mms://live.rfn.ru/rcult</Url>
 		<Dialect>rus</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -244,14 +244,14 @@
 		<Src>radio_blago</Src>
 		<Url descr="stream_url">mms://live.radioblago.ru:3280</Url>
 		<Dialect>rus</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
 	<SrcDef id="31" lang="eng">
 		<Src>bfbs1</Src>
 		<Url descr="stream_url">http://icy-e-04.sharp-stream.com:80/ssvcbfbs1.mp3</Url>
-		<Dialect>eng</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
@@ -259,10 +259,10 @@
   <SrcDef id="32" lang="eng">
     <Src>bbc_worldservice</Src>
     <Url descr="stream_url">mms://livewmstream-ws.bbc.co.uk.edgestreams.net/reflector:43021</Url>
-    <Dialect>eng</Dialect>
-    <Download>y</Download>
+    <Dialect>gbr</Dialect>
+    <Download>n</Download>
     <Cmd>mplayer</Cmd>
-    <Ext>mp3</Ext>
+    <Ext>wmv</Ext>
   </SrcDef>
 </SrcTbl>
 

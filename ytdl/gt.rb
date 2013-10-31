@@ -9,7 +9,7 @@ require 'logger'
 require 'date'
 require 'nokogiri' #change db password to be in xml file instead of argv...or ldcdb?
 
-DATADIR = "/vast/src"
+DATADIR = "/vast/video"
 LOGDIR = "/vast"
 $log = Logger.new('vast_downloader.log')
 abort "Enter database password!" unless ARGV[0]
