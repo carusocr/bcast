@@ -3,6 +3,7 @@
 # needed additions: ldcdb password checking, or xml config file for the same
 # 24 July 2013
 # Author: Chris Caruso
+# NOTES: Switch to ActiveRecord!
 
 require 'mysql'
 require 'logger'
@@ -55,6 +56,26 @@ def build_subscription_clips
 		# cheesy kluge to mark parent url as having been checked, varchar(3) limitations...
 		$m.query("update vscout_url set subscribe = 'dun' where id = #{id}")
 	end
+
+end
+
+def gen_randids
+
+# generates rand_id value for each clip that doesn't have one yet. 
+# rand_id is what sponsor uses as an identifier for media files
+# instead of sequential and thus potentially informational media_file value.
+
+# get existing rands
+	@nums_existing = Array.new
+	rq = $m.query("select substr(rand_id,4,6) as randstr from vscout_url where rand_id is not null")
+		rq.each_hash do |r|
+			puts r.inspect
+			@nums_existing << r['randstr']
+		end	
+	rq = $m.query("select count(*) from vscout_url where rand_id is null")
+	randcount = rq.fetch_row
+	puts randcount
+	puts @nums_existing.inspect
 
 end
 
@@ -126,7 +147,9 @@ def add_child_clip_to_database(clip_url, id)
 
 end
 
-build_parent_clips
-build_subscription_clips
-build_downloads
+
+#build_parent_clips
+#build_subscription_clips
+#build_downloads
+gen_randids
 $m.close
