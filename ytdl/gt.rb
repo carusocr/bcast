@@ -26,7 +26,7 @@ $downloaded_clips = Hash.new
 
 def build_parent_clips
 
-	ytq = $m.query("select id, subscribe, url, parent_url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%HVC%') and date_found like '#{$daterange}%'")
+	ytq = $m.query("select id, subscribe, url, parent_url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%VVC%') and date_found like '#{$daterange}%'")
 	ytq.each_hash do |r|
 		if r['subscribe'] == 'yes' && r['parent_url'] == nil
 			puts "Found subscription flag for url #{r['url']}\n"
@@ -98,12 +98,13 @@ end
 
 def download_clip(url,id)
 
-	video_clip = "VVC" + format("%06d",id) + ".mp4"
+	video_clip = "VVC" + format("%06d",id)
 	if url =~ /^\d{4,10}$/
-		`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} vimeo.com/#{url}`
+		`youtube-dl -w -f 18 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" vimeo.com/#{url}`
 	elsif url =~ /^.{11}$/
-		`youtube-dl -w -f 18 -o #{DATADIR}/#{video_clip} youtube.com/watch?v=#{url}`
+		`youtube-dl -w -f 18 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" youtube.com/watch?v=#{url}`
 	end
+	video_clip = "VVC" + format("%06d",id) + ".mp4"
 	if File.exist?("#{DATADIR}/#{video_clip}")
 		$log.info "#{url} successfully downloaded as #{video_clip}\n"
 		generate_metadata(video_clip,id)
@@ -148,8 +149,8 @@ def add_child_clip_to_database(clip_url, id)
 end
 
 
-#build_parent_clips
-#build_subscription_clips
-#build_downloads
-gen_randids
+build_parent_clips
+build_subscription_clips
+build_downloads
+#gen_randids
 $m.close
