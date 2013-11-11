@@ -22,7 +22,6 @@ $m = Mysql.new "dbm.ldc.upenn.edu", "vast", "#{dbpass}", "vast"
 $channel_clip_parents = Hash.new
 $download_urls = Hash.new
 $existing_urls = []
-$downloaded_clips = Hash.new
 
 def build_parent_clips
 
@@ -47,7 +46,7 @@ def build_subscription_clips
 		uploader = `youtube-dl #{clip_string} --get-filename -o \"%(uploader_id)s\"`
 		puts "Uploader is #{uploader}"
 		$log.info "Uploader is #{uploader}\n"
-		`youtube-dl --get-filename -f 18 ytuser:#{uploader}`.split("\n").each do |c|
+		`youtube-dl --get-filename -f 18/22 ytuser:#{uploader}`.split("\n").each do |c|
 			clip_url = c[/(.{11})\.mp4/,1]
 			if (clip_url != clip_string) && $existing_urls.include?(clip_url) == false
 				add_child_clip_to_database(clip_url, id)
@@ -100,9 +99,9 @@ def download_clip(url,id)
 
 	video_clip = "VVC" + format("%06d",id)
 	if url =~ /^\d{4,10}$/
-		`youtube-dl -w -f 18 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" vimeo.com/#{url}`
+		`youtube-dl -w -f 18/22 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" vimeo.com/#{url}`
 	elsif url =~ /^.{11}$/
-		`youtube-dl -w -f 18 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" youtube.com/watch?v=#{url}`
+		`youtube-dl -w -f 18/22 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" youtube.com/watch?v=#{url}`
 	end
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
 	if File.exist?("#{DATADIR}/#{video_clip}")
