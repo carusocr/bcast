@@ -20,7 +20,6 @@ lang = ARGV[0]
 config_file = "getstream.xml"
 RECDIR = '/lre14-collection/audio/incoming'
 REC_DURATION = 1500;
-#add duration to config file so different sources can have different durations
 sources = Hash.new
 doc = Nokogiri::XML(File.open("#{src_dir}/#{config_file}"))
 
@@ -34,14 +33,12 @@ doc.xpath("//SrcDef[@lang=\"#{lang}\"]/Download").each do |node|
 end
 
 def download_stream(downloader,timestring,src_name,src_url,lang,dialect)
-
+# add some file extension handling, not all downloaded streams are mp3!
 	if downloader == "mplayer"
-		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.mp3\n"
-		puts cmd
+		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.#{extension}\n"
 		`#{cmd}`
 	elsif downloader == "rtmpdump"
-		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.aac -B #{REC_DURATION}\n"
-		puts cmd
+		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.#{extension} -B #{REC_DURATION}\n"
 		`#{cmd}`
 	end
 
@@ -56,6 +53,7 @@ def killprocs(src_name) # <--- change this to src_url after testing! ***
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
 		Process.kill("KILL",t.to_i)
 		sleep 5
+		#`kill #{t}`
 	end
 
 end
@@ -68,15 +66,13 @@ sources.keys.each do |s|
 
 	src_name = sources[s][0]
 	src_url = sources[s][1]
-	if src_url =~ /^mms/
-		puts "mms!"
-	end
 	timestring = Time.now.strftime("%Y%m%d_%H%M%S")
 	dialect = sources[s][2]
 	downloader = sources[s][4]
+	extension = sources[s][5]
 	killprocs(src_name) # Kill any existing downloads.
 	#fork each source download and record PID in hash
 	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang,dialect)}
-	sources[s][5] = src_pid
+	sources[s][6] = src_pid
 
 end
