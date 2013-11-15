@@ -18,7 +18,7 @@
   </SrcDef>
   <SrcDef id="2" lang="spa">
     <Src>spain_rne3</Src>
-    <Url descr="stream_url">http://195.10.10.207/rtve/radio3.mp3</Url>
+    <Url descr="stream_url">http://195.10.10.226/rtve/radio3.mp3</Url>
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
@@ -57,12 +57,12 @@
 		<Ext>mp3</Ext>
   </SrcDef>
   <SrcDef id="7" lang="spa">
-    <Src>spain_onda_cero</Src>
-    <Url descr="stream_url">http://stream.ondaceronoroeste.es:8000/ondacero.mp3</Url>
+    <Src>onda_cero_madrid</Src>
+    <Url descr="stream_url">mms://ondacerolivewm.fplive.net/ondacerowmlive-live/oc_madrid</Url>
 		<Dialect>eur</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
-		<Ext>mp3</Ext>
+		<Ext>wmv</Ext>
   </SrcDef>
   <SrcDef id="8" lang="spa">
     <Src>COLOMBIA1</Src>
@@ -155,7 +155,7 @@
   <SrcDef id="19" lang="eng">
     <Src>LBC973</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC973</Url>
-		<Dialect>gbr</Dialect>
+		<Dialect>gbe</Dialect>
 		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
@@ -163,8 +163,8 @@
   <SrcDef id="20" lang="eng">
     <Src>LBC1152</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC1152</Url>
-		<Dialect>gbr</Dialect>
-		<Download>y</Download>
+		<Dialect>gbe</Dialect>
+		<Download>n</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
   </SrcDef>
@@ -188,7 +188,7 @@
 		<Src>radio_via</Src>
 		<Url descr="stream_url">http://62.133.128.18:8040/</Url>
 		<Dialect>pol</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -196,7 +196,7 @@
 		<Src>radio_jasna_gora</Src>
 		<Url descr="stream_url">http://shot4.inten.pl:8252/</Url>
 		<Dialect>pol</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -204,7 +204,7 @@
 		<Src>radio_bogoria</Src>
 		<Url descr="stream_url">http://s6.radiohost.pl:8888/</Url>
 		<Dialect>pol</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -212,7 +212,7 @@
 		<Src>radio_oko</Src>
 		<Url descr="stream_url">http://stream2.nadaje.com:8094/</Url>
 		<Dialect>pol</Dialect>
-		<Download>y</Download>
+		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
@@ -251,18 +251,41 @@
 	<SrcDef id="31" lang="eng">
 		<Src>bfbs1</Src>
 		<Url descr="stream_url">http://icy-e-04.sharp-stream.com:80/ssvcbfbs1.mp3</Url>
-		<Dialect>gbr</Dialect>
+		<Dialect>eng</Dialect>
+		<Download>n</Download>
+		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
+	</SrcDef>
+	<SrcDef id="32" lang="eng">
+		<Src>bbc_worldservice</Src>
+		<Url descr="stream_url">mms://livewmstream-ws.bbc.co.uk.edgestreams.net/reflector:43021</Url>
+		<Dialect>eng</Dialect>
+		<Download>n</Download>
+		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
+	</SrcDef>
+	<SrcDef id="33" lang="spa">
+		<Src>canal_sur_radio</Src>
+		<Url descr="stream_url">http://195.10.10.210/rtva/canalsurradio_master.mp3</Url>
+		<Dialect>eur</Dialect>
 		<Download>y</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
 	</SrcDef>
-  <SrcDef id="32" lang="eng">
-    <Src>bbc_worldservice</Src>
-    <Url descr="stream_url">mms://livewmstream-ws.bbc.co.uk.edgestreams.net/reflector:43021</Url>
-    <Dialect>gbr</Dialect>
-    <Download>n</Download>
-    <Cmd>mplayer</Cmd>
-    <Ext>wmv</Ext>
-  </SrcDef>
+	<SrcDef id="34" lang="spa">
+		<Src>radio_andalucia</Src>
+		<Url descr="stream_url">http://195.10.10.226/rtva/radioandalucia.mp3</Url>
+		<Dialect>eur</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+		<Ext>mp3</Ext>
+	</SrcDef>
+	<SrcDef id="35" lang="zho">
+		<Src>radio_sing_tao</Src>
+		<Url descr="stream_url">http://canlive.chineseradio.com:9034</Url>
+		<Dialect>yue</Dialect>
+		<Download>y</Download>
+		<Cmd>mplayer</Cmd>
+		<Ext>aac</Ext>
+	</SrcDef>
 </SrcTbl>
-
