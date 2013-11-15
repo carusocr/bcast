@@ -36,10 +36,14 @@ def download_stream(downloader,timestring,src_name,src_url,lang,dialect,extensio
 # add some file extension handling, not all downloaded streams are mp3!
 	if downloader == "mplayer"
 		cmd = "mplayer #{src_url} -cache 8192 -dumpstream -dumpfile #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.#{extension}\n"
-		#`#{cmd}`
+		`#{cmd}`
 	elsif downloader == "rtmpdump"
 		cmd = "rtmpdump -r \"#{src_url}\" -o #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.#{extension} -B #{REC_DURATION}\n"
-		#`#{cmd}`
+		`#{cmd}`
+	elsif downloader == "ffmpeg2"
+		# added volume option to test out clipping reduction
+		cmd = "ffmpeg2 -i #{src_url} -af 'volume=0.8' #{RECDIR}/#{timestring}_#{src_name}_#{dialect}_#{lang}.#{extension}\n"
+		`#{cmd}`
 	end
 
 end
