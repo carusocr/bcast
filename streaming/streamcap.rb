@@ -57,7 +57,6 @@ def killprocs(src_name) # <--- change this to src_url after testing! ***
 		puts "Killing \##{t}, existing #{src_name} process...\n"	
 		Process.kill("KILL",t.to_i)
 		sleep 5
-		#`kill #{t}`
 	end
 
 end
@@ -76,7 +75,7 @@ sources.keys.each do |s|
 	extension = sources[s][5]
 	killprocs(src_name) # Kill any existing downloads.
 	#fork each source download and record PID in hash
-	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang,dialect)}
+	src_pid = Process.fork {download_stream(downloader,timestring,src_name,src_url,lang,dialect,extension)}
 	sources[s][6] = src_pid
 
 end

@@ -99,9 +99,9 @@ def download_clip(url,id)
 
 	video_clip = "VVC" + format("%06d",id)
 	if url =~ /^\d{4,10}$/
-		`youtube-dl -w -f 18/22 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" vimeo.com/#{url}`
+		`youtube-dl -w -f 18/22 -o #{DATADIR}/#{video_clip}."%(ext)s" vimeo.com/#{url}`
 	elsif url =~ /^.{11}$/
-		`youtube-dl -w -f 18/22 -x -k -o #{DATADIR}/#{video_clip}."%(ext)s" youtube.com/watch?v=#{url}`
+		`youtube-dl -w -f 18/22 -o #{DATADIR}/#{video_clip}."%(ext)s" youtube.com/watch?v=#{url}`
 	end
 	video_clip = "VVC" + format("%06d",id) + ".mp4"
 	if File.exist?("#{DATADIR}/#{video_clip}")
