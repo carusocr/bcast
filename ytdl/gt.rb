@@ -25,7 +25,7 @@ $existing_urls = []
 
 def build_parent_clips
 
-	ytq = $m.query("select id, subscribe, url, parent_url from vscout_url where url like '%yout%' and (media_file is NULL or media_file not like '%VVC%') and date_found like '#{$daterange}%'")
+	ytq = $m.query("select id, subscribe, url, parent_url from vscout_url where url like '%yout%' and (media_file is NULL) and date_found like '#{$daterange}%'")
 	ytq.each_hash do |r|
 		if r['subscribe'] == 'yes' && r['parent_url'] == nil
 			puts "Found subscription flag for url #{r['url']}\n"
