@@ -1,20 +1,19 @@
 #!/usr/bin/env ruby
-
+#Google image search is a pain in the ass, start small with Yahoo.
 require 'mechanize'
 require 'nokogiri'
 
 agent = Mechanize.new
 
-page = agent.get('http://images.google.com/')
+page = agent.get('http://images.search.yahoo.com/')
 
 page.links.each do |link|
 	puts link.text
 end
 
-#pp page
 
-goog_form = page.form('f')
-goog_form.q = 'perl vs ruby mechanize'
+img_form = page.form('s')
+img_form.p = "maitake"
 
-#page = agent.submit(goog_form)
-#pp page
+page = agent.submit(img_form)
+pp page
