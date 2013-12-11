@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 #Google image search is a pain in the ass, start small with Yahoo.
+# download set of images, compare them and discard lower quality dupes
+# do this with audio next
+
 require 'mechanize'
 require 'nokogiri'
 
@@ -24,7 +27,7 @@ page.links_with(:href => %r{imgurl}).each do |link|
 		puts imgurl
 		dlurl = "http://" + imgurl
 		puts "downloading #{dlurl} as #{searchterm}_#{counter}.jpg"
-		dler.get(dlurl).save("downloads/#{searchterm}_#{counter}.jpg")
+		#dler.get(dlurl).save("downloads/#{searchterm}_#{counter}.jpg")
 		counter+=1
 		sleep(2)
 		#puts link.href
