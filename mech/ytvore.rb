@@ -22,6 +22,8 @@ maybe license although SYL isn't listed.
 How to exclude fullnames? I would bet that video clips with someone's name in the 
 thumbnail description also has them using their own name in the clip itself.
 
+Grab additional data from search page - thumbnail, description, uploader.
+
 =end
 
 
@@ -30,10 +32,17 @@ require 'nokogiri'
 
 searchstring = ARGV[0]
 ytpage = "http://www.youtube.com/results?search_query=" + searchstring
-puts ytpage
 agent = Mechanize.new
 page = agent.get(ytpage)
 
-page.parser.xpath('//*[@data-video-ids]').each do |vid|
-	puts vid.attr('data-video-ids')
+pp page
+
+def grab_page_links(page)
+
+	page.parser.xpath('//*[@data-video-ids]').each do |vid|
+		puts vid.attr('data-video-ids')
+	end
+
 end
+
+#grab_page_links(page)
