@@ -19,10 +19,24 @@ will be a lot of videos, but after that maybe search once a day for any videos.
 Need to test out application of filters. We will want to use duration, upload date,
 maybe license although SYL isn't listed.
 
-How to exclude fullnames? I would bet that video clips with someone's name in the 
+*Check to make sure that our search term is actually being used! 
+'Zokfotpik' will be switched out for 'Zootic', for example.
+
+*How to exclude fullnames? I would bet that video clips with someone's name in the 
 thumbnail description also has them using their own name in the clip itself.
 
-Grab additional data from search page - thumbnail, description, uploader.
+*Grab additional data from search page - thumbnail, description, uploader.
+
+- Database structure?
+
+prescout
+
+id int(11) not null auto increment,
+url char(11) not null,
+uploader varchar(20),
+title varchar(255),
+primary key id,
+key url
 
 =end
 
@@ -39,9 +53,12 @@ page = agent.get(ytpage)
 max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
 total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
 pagecount = (total_results < max_pages) ? total_results : max_pages
+#added to keep results sane during testing
+pagecount=2
 
-def grab_page_links(page)
+def grab_page_links(agent,ytpage)
 
+	page = agent.get(ytpage)
 	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
 
 		puts vid.attr('data-context-item-title')
@@ -54,4 +71,9 @@ def grab_page_links(page)
 
 end
 
-#grab_page_links(page)
+for i in 1..pagecount
+	ytpage = "http://www.youtube.com/results?search_query=" + searchstring + "&page=#{i}"
+	puts ytpage
+	grab_page_links(agent,ytpage)
+
+end
