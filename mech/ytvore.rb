@@ -35,12 +35,21 @@ ytpage = "http://www.youtube.com/results?search_query=" + searchstring
 agent = Mechanize.new
 page = agent.get(ytpage)
 
-pp page
+#get max number of pages to crawl
+max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
+total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
+pagecount = (total_results < max_pages) ? total_results : max_pages
 
 def grab_page_links(page)
 
-	page.parser.xpath('//*[@data-video-ids]').each do |vid|
-		puts vid.attr('data-video-ids')
+	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
+
+		puts vid.attr('data-context-item-title')
+		puts vid.attr('data-context-item-user')
+		puts vid.attr('data-context-item-time')
+		puts vid.attr('data-context-item-id')
+		puts "\n"
+
 	end
 
 end
