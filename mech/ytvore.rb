@@ -3,7 +3,7 @@
 =begin
 Name: ytvore.rb
 Date Created: 10 December 2013
-Author: Chris Caruo
+Author: Chris Caruso
 Script to crawl YouTube and search for videos matching keywords stored in a local database.
 General process:
 1. We generate a list of events and associated search terms and use this information to create a database table of keywords, each associated to a particular event in ascout_event.
@@ -44,8 +44,9 @@ key url
 require 'mechanize'
 require 'nokogiri'
 
+search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 searchstring = ARGV[0]
-ytpage = "http://www.youtube.com/results?search_query=" + searchstring
+ytpage = search_prefix + searchstring
 agent = Mechanize.new
 page = agent.get(ytpage)
 
@@ -55,6 +56,15 @@ total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/stron
 pagecount = (total_results < max_pages) ? total_results : max_pages
 #added to keep results sane during testing
 pagecount=2
+
+#test check for searchterm swap
+#change search to be insistent, don't even worry about this?
+swap = page.parser.xpath('//a[@class="spell-correction-given-query"]').text.strip!
+unless swap.nil?
+	puts "Bastards nerfed your search!"
+	puts swap
+	exit
+end
 
 def grab_page_links(agent,ytpage)
 
@@ -72,7 +82,7 @@ def grab_page_links(agent,ytpage)
 end
 
 for i in 1..pagecount
-	ytpage = "http://www.youtube.com/results?search_query=" + searchstring + "&page=#{i}"
+	ytpage = search_prefix + searchstring + "&page=#{i}"
 	puts ytpage
 	grab_page_links(agent,ytpage)
 
