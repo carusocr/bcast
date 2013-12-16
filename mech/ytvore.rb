@@ -26,6 +26,7 @@ maybe license although SYL isn't listed.
 thumbnail description also has them using their own name in the clip itself.
 
 *Grab additional data from search page - thumbnail, description, uploader.
+* youtube-dl can grab autocaptions - get those as well? Fullname filter?
 
 - Database structure?
 
@@ -44,6 +45,7 @@ key url
 require 'mechanize'
 require 'nokogiri'
 
+#added nfpr to prevent searchterm swapping
 search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 searchstring = ARGV[0]
 ytpage = search_prefix + searchstring
