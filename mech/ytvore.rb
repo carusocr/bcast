@@ -31,7 +31,7 @@ thumbnail description also has them using their own name in the clip itself.
 	video description
 	video length
 
-- Database structure?
+new table schema
 
 searchterm
 
@@ -83,6 +83,7 @@ prescout
 =end
 
 
+require 'open-uri'
 require 'mechanize'
 require 'nokogiri'
 
@@ -90,6 +91,8 @@ require 'nokogiri'
 search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 searchstring = ARGV[0]
 ytpage = search_prefix + searchstring
+wikipage = "http://en.wikipedia.org/wiki/" + searchstring + "_discography"
+puts wikipage
 agent = Mechanize.new
 page = agent.get(ytpage)
 
@@ -125,10 +128,24 @@ def grab_page_links(agent,ytpage)
 
 end
 
-for i in 1..pagecount
+def scrape_wiki_albums(agent,wikipage)
 
-	ytpage = search_prefix + searchstring + "&page=#{i}"
-	puts ytpage
-	grab_page_links(agent,ytpage)
+	#this depends on consistent naming conventions and existence of <artist>_discography Wikipage
+
+	doc = Nokogiri::HTML(open(wikipage))
+	doc.xpath('//table/caption[contains(text(),"studio album")]/..//th[@scope="row"]//a').each do |t|
+		
+		puts t.attr('href')
+	
+	end
+
 
 end
+
+scrape_wiki_albums(agent,wikipage)
+
+#for i in 1..pagecount
+#	ytpage = search_prefix + searchstring + "&page=#{i}"
+#	puts ytpage
+#	grab_page_links(agent,ytpage)
+#end
