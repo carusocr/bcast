@@ -19,25 +19,66 @@ will be a lot of videos, but after that maybe search once a day for any videos.
 Need to test out application of filters. We will want to use duration, upload date,
 maybe license although SYL isn't listed.
 
-*Check to make sure that our search term is actually being used! 
-'Zokfotpik' will be switched out for 'Zootic', for example.
-
 *How to exclude fullnames? I would bet that video clips with someone's name in the 
 thumbnail description also has them using their own name in the clip itself.
 
-*Grab additional data from search page - thumbnail, description, uploader.
-* youtube-dl can grab autocaptions - get those as well? Fullname filter?
+* Grab additional data from search page - thumbnail, description, uploader, license info
+* youtube-dl can get autocaps, but those are terrible for filtering anything.
+* youtube-dl can also get: 
+	thumbnail URL
+	title
+	ID
+	video description
+	video length
 
 - Database structure?
 
+searchterm
+
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| event   | int(11)      | NO   | MUL | NULL    |                |
+| name    | varchar(255) | NO   |     | NULL    |                |
+| created | datetime     | YES  |     | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+
 prescout
 
-id int(11) not null auto increment,
-url char(11) not null,
-uploader varchar(20),
-title varchar(255),
-primary key id,
-key url
+| ascout_prescout | CREATE TABLE `ascout_prescout` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `url` char(11) NOT NULL,
+  `uploader` varchar(20) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
+  `searchterm` int(11) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`),
+  KEY `ascout_searchterm_ibfk_2` (`searchterm`),
+	CONSTRAINT `ascout_prescout_ibfk1` FOREIGN KEY (`searchterm`) REFERENCES `ascout_searchterm` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
+
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| id         | int(11)     | NO   | PRI | 0       |       |
+| url        | char(11)    | NO   | UNI | NULL    |       |
+| uploader   | varchar(20) | YES  |     | NULL    |       |
+| duration   | int(11)     | YES  |     | NULL    |       |
+| searchterm | int(11)     | YES  | MUL | NULL    |       |
+| created    | datetime    | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+
+| ascout_searchterm | CREATE TABLE `ascout_searchterm` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `event` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `created` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `event` (`event`),
+	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 |
 
 =end
 
@@ -45,7 +86,7 @@ key url
 require 'mechanize'
 require 'nokogiri'
 
-#added nfpr to prevent searchterm swapping
+#nfpr = don't replace searchterm
 search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 searchstring = ARGV[0]
 ytpage = search_prefix + searchstring
@@ -56,17 +97,18 @@ page = agent.get(ytpage)
 max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
 total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
 pagecount = (total_results < max_pages) ? total_results : max_pages
+
 #added to keep results sane during testing
 pagecount=2
 
 #test check for searchterm swap
 #change search to be insistent, don't even worry about this?
-swap = page.parser.xpath('//a[@class="spell-correction-given-query"]').text.strip!
-unless swap.nil?
-	puts "Bastards nerfed your search!"
-	puts swap
-	exit
-end
+#swap = page.parser.xpath('//a[@class="spell-correction-given-query"]').text.strip!
+#unless swap.nil?
+#	puts "Bastards nerfed your search!"
+#	puts swap
+#	exit
+#end
 
 def grab_page_links(agent,ytpage)
 
@@ -84,6 +126,7 @@ def grab_page_links(agent,ytpage)
 end
 
 for i in 1..pagecount
+
 	ytpage = search_prefix + searchstring + "&page=#{i}"
 	puts ytpage
 	grab_page_links(agent,ytpage)
