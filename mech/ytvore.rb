@@ -83,16 +83,23 @@ prescout
 =end
 
 
+require 'mysql'
 require 'open-uri'
 require 'mechanize'
 require 'nokogiri'
 
 #nfpr = don't replace searchterm
 search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
-searchstring = ARGV[0]
+abort "Enter database password!" unless ARGV[0]
+dbpass = ARGV[0]
+searchstring = ARGV[1] ? ARGV[1] : "all"
 ytpage = search_prefix + searchstring
-wikipage = "http://en.wikipedia.org/wiki/" + searchstring + "_discography"
-puts wikipage
+wikipage = "http://en.wikipedia.org/wiki/" + searchstring
+
+$m = Mysql.new "localhost", "root", "#{dbpass}", "ascout"
+$channel_clip_parents = Hash.new
+$download_urls = Hash.new
+$existing_urls = []
 agent = Mechanize.new
 page = agent.get(ytpage)
 
@@ -103,15 +110,6 @@ pagecount = (total_results < max_pages) ? total_results : max_pages
 
 #added to keep results sane during testing
 pagecount=2
-
-#test check for searchterm swap
-#change search to be insistent, don't even worry about this?
-#swap = page.parser.xpath('//a[@class="spell-correction-given-query"]').text.strip!
-#unless swap.nil?
-#	puts "Bastards nerfed your search!"
-#	puts swap
-#	exit
-#end
 
 def grab_page_links(agent,ytpage)
 
@@ -130,6 +128,8 @@ end
 
 def scrape_wiki_albums(agent,wikipage)
 
+	wikipage += "_discography"
+
 	#this depends on consistent naming conventions and existence of <artist>_discography Wikipage
 
 	doc = Nokogiri::HTML(open(wikipage))
@@ -142,7 +142,16 @@ def scrape_wiki_albums(agent,wikipage)
 
 end
 
-scrape_wiki_albums(agent,wikipage)
+def update_prescout()
+end
+
+def build_searchlist()
+end
+
+def scrape_youtube()
+end
+
+#scrape_wiki_albums(agent,wikipage)
 
 #for i in 1..pagecount
 #	ytpage = search_prefix + searchstring + "&page=#{i}"
