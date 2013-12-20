@@ -146,10 +146,21 @@ def update_prescout()
 end
 
 def build_searchlist()
+
+	ytq = $m.query("select id,name from ascout_searchterm")
+	ytq.each_hash do |r|
+
+		puts r['id']
+		puts r['name']
+
+	end
+		
 end
 
 def scrape_youtube()
 end
+
+build_searchlist()
 
 #scrape_wiki_albums(agent,wikipage)
 
