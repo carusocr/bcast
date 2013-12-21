@@ -84,6 +84,7 @@ Method flow:
 
 1. Assemble list of search terms.
 2. For each search term, perform youtube page search from 1..pagemax. Push results into hash!
+2a. ...or automatically update ascout_prescout with data, but push url+id to download hash?
 3. Repeat for all search terms, build one huge hash. Values needed in hash are...? ID. URL.
 4. Hash.each call update_prescout.
 5. Go back and query prescout to get list of stuff to download.
@@ -109,8 +110,8 @@ wikipage = "http://en.wikipedia.org/wiki/" + searchstring
 $m = Mysql.new "localhost", "root", "#{dbpass}", "ascout"
 $download_urls = Hash.new
 $existing_urls = []
-agent = Mechanize.new
-page = agent.get(ytpage)
+$agent = Mechanize.new
+page = $agent.get(ytpage)
 
 #get max number of pages to crawl
 max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
@@ -120,9 +121,10 @@ pagecount = (total_results < max_pages) ? total_results : max_pages
 #added to keep results sane during testing
 pagecount=2
 
-def grab_page_links(agent,ytpage)
+def grab_page_links(ytpage)
 
-	page = agent.get(ytpage)
+	page_hits = Array.new
+	page = $agent.get(ytpage)
 	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
 		title =  vid.attr('data-context-item-title')
 		uploader = vid.attr('data-context-item-user')
@@ -130,14 +132,17 @@ def grab_page_links(agent,ytpage)
 		duration = vid.attr('data-context-item-time')
 		url = vid.attr('data-context-item-id')
 
-
-		puts "#{title}\t#{duration}\t#{uploader}\t#{url}\n"
+		#return url,title,uploader,duration
+		page_hits << "#{url}\t#{title}\t#{uploader}\t#{duration}"
+		# need to populate array, then return array!
 
 	end
 
+	return page_hits
+
 end
 
-def scrape_wiki_albums(agent,wikipage)
+def scrape_wiki_albums(wikipage)
 
 	wikipage += "_discography"
 
@@ -168,18 +173,27 @@ def build_searchlist()
 	ytq = $m.query("select id,name from ascout_searchterm")
 	ytq.each_hash do |r|
 		
-#		ytpage = $searchstring + "#{r['name']}"
-#		searchterm = r['id']
-#		grab_page_links(agent,ytpage)
-#		sleep 3	
-		puts r['id']
-		puts r['name']
+		ytpage = $search_prefix + "#{r['name']}"
+		puts ytpage
+		searchterm = r['id']
+		page_hits = grab_page_links(ytpage)
+		page_hits.each do |hit|
+
+			url,title,uploader,duration = hit.split("\t")
+			puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
+			#call updater here to populate ascout_prescout
+
+		end
+		sleep 3	
 
 	end
 		
 end
 
 def scrape_youtube()
+end
+
+def download_clips()
 end
 
 build_searchlist()
