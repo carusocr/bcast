@@ -31,25 +31,13 @@ thumbnail description also has them using their own name in the clip itself.
 	video description
 	video length
 
-new table schema
-
-searchterm
-
-+---------+--------------+------+-----+---------+----------------+
-| Field   | Type         | Null | Key | Default | Extra          |
-+---------+--------------+------+-----+---------+----------------+
-| id      | int(11)      | NO   | PRI | NULL    | auto_increment |
-| event   | int(11)      | NO   | MUL | NULL    |                |
-| name    | varchar(255) | NO   |     | NULL    |                |
-| created | datetime     | YES  |     | NULL    |                |
-+---------+--------------+------+-----+---------+----------------+
-
-prescout
+New tables for ascout:
 
 | ascout_prescout | CREATE TABLE `ascout_prescout` (
   `id` int(11) NOT NULL DEFAULT '0',
   `url` char(11) NOT NULL,
   `uploader` varchar(20) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
   `duration` int(11) DEFAULT NULL,
   `searchterm` int(11) DEFAULT NULL,
   `created` datetime DEFAULT NULL,
@@ -65,6 +53,7 @@ prescout
 | id         | int(11)     | NO   | PRI | 0       |       |
 | url        | char(11)    | NO   | UNI | NULL    |       |
 | uploader   | varchar(20) | YES  |     | NULL    |       |
+| title      | varchar(255)| YES  |     | NULL    |       |
 | duration   | int(11)     | YES  |     | NULL    |       |
 | searchterm | int(11)     | YES  | MUL | NULL    |       |
 | created    | datetime    | YES  |     | NULL    |       |
@@ -79,6 +68,15 @@ prescout
   KEY `event` (`event`),
 	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 |
+
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| event   | int(11)      | NO   | MUL | NULL    |                |
+| name    | varchar(255) | NO   |     | NULL    |                |
+| created | datetime     | YES  |     | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
 
 Method flow:
 
