@@ -80,6 +80,16 @@ prescout
 	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 |
 
+Method flow:
+
+1. Assemble list of search terms.
+2. For each search term, perform youtube page search from 1..pagemax. Push results into hash!
+3. Repeat for all search terms, build one huge hash. Values needed in hash are...? ID. URL.
+4. Hash.each call update_prescout.
+5. Go back and query prescout to get list of stuff to download.
+6. Download clips.
+7. Update metadata.
+
 =end
 
 
@@ -89,15 +99,14 @@ require 'mechanize'
 require 'nokogiri'
 
 #nfpr = don't replace searchterm
-search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
+$search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 abort "Enter database password!" unless ARGV[0]
 dbpass = ARGV[0]
 searchstring = ARGV[1] ? ARGV[1] : "all"
-ytpage = search_prefix + searchstring
+ytpage = $search_prefix + searchstring
 wikipage = "http://en.wikipedia.org/wiki/" + searchstring
 
 $m = Mysql.new "localhost", "root", "#{dbpass}", "ascout"
-$channel_clip_parents = Hash.new
 $download_urls = Hash.new
 $existing_urls = []
 agent = Mechanize.new
@@ -115,12 +124,14 @@ def grab_page_links(agent,ytpage)
 
 	page = agent.get(ytpage)
 	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
+		title =  vid.attr('data-context-item-title')
+		uploader = vid.attr('data-context-item-user')
+		#get uploader name from youtube-dl? Succinct but slower.
+		duration = vid.attr('data-context-item-time')
+		url = vid.attr('data-context-item-id')
 
-		puts vid.attr('data-context-item-title')
-		puts vid.attr('data-context-item-user')
-		puts vid.attr('data-context-item-time')
-		puts vid.attr('data-context-item-id')
-		puts "\n"
+
+		puts "#{title}\t#{duration}\t#{uploader}\t#{url}\n"
 
 	end
 
@@ -142,14 +153,25 @@ def scrape_wiki_albums(agent,wikipage)
 
 end
 
-def update_prescout()
+def update_prescout(url,uploader,duration,searchterm)
+
+	begin
+
+		$m.query("insert into ascout_url (url, uploader, duration, searchterm, created) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp)")
+
+	rescue Mysql::Error
+	end
 end
 
 def build_searchlist()
 
 	ytq = $m.query("select id,name from ascout_searchterm")
 	ytq.each_hash do |r|
-
+		
+#		ytpage = $searchstring + "#{r['name']}"
+#		searchterm = r['id']
+#		grab_page_links(agent,ytpage)
+#		sleep 3	
 		puts r['id']
 		puts r['name']
 
@@ -167,5 +189,5 @@ build_searchlist()
 #for i in 1..pagecount
 #	ytpage = search_prefix + searchstring + "&page=#{i}"
 #	puts ytpage
-#	grab_page_links(agent,ytpage)
+#grab_page_links(agent,ytpage)
 #end
