@@ -156,19 +156,22 @@ def scrape_wiki_albums(wikipage)
 
 end
 
-def update_prescout(url,uploader,duration,searchterm)
+def update_prescout(url,uploader,duration,searchterm,title)
 
 	begin
 
-		$m.query("insert into ascout_url (url, uploader, duration, searchterm, created) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp)")
+		#change single quotes to escaped quotes for sql statement
+		title = title.gsub("'", %q(\\\'))
+		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
 
-	rescue Mysql::Error
+	rescue Mysql::Error => e
+		pp e
 	end
 end
 
 def build_searchlist()
 
-	ytq = $m.query("select id,name from ascout_searchterm")
+	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
 	ytq.each_hash do |r|
 		
 		ytpage = $search_prefix + "#{r['name']}"
@@ -178,7 +181,8 @@ def build_searchlist()
 		page_hits.each do |hit|
 
 			url,title,uploader,duration = hit.split("\t")
-			puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
+		#	puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
+			update_prescout(url,uploader,duration,searchterm,title)
 			#call updater here to populate ascout_prescout
 
 		end
