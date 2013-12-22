@@ -64,6 +64,7 @@ New tables for ascout:
   `event` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created` datetime DEFAULT NULL,
+	`active` boolean default 0,
   PRIMARY KEY (`id`),
   KEY `event` (`event`),
 	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
@@ -76,6 +77,8 @@ New tables for ascout:
 | event   | int(11)      | NO   | MUL | NULL    |                |
 | name    | varchar(255) | NO   |     | NULL    |                |
 | created | datetime     | YES  |     | NULL    |                |
+| active  | tinyint(1)   | YES  |     | 0       |                |
+| aud_only| tinyint(1)   | YES  |     | 0       |                |
 +---------+--------------+------+-----+---------+----------------+
 
 Method flow:
@@ -182,8 +185,10 @@ def build_searchlist()
 
 			url,title,uploader,duration = hit.split("\t")
 		#	puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
-			update_prescout(url,uploader,duration,searchterm,title)
-			#call updater here to populate ascout_prescout
+	#		update_prescout(url,uploader,duration,searchterm,title)
+	#		NEED TO PASS PRESCOUT_URL ID TO clip downloader
+			download_clips(url)
+			exit
 
 		end
 		sleep 3	
@@ -195,7 +200,8 @@ end
 def scrape_youtube()
 end
 
-def download_clips()
+def download_clips(url)
+	`youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}`
 end
 
 build_searchlist()
