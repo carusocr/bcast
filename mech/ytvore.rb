@@ -92,6 +92,15 @@ Method flow:
 6. Download clips.
 7. Update metadata.
 
+
+TO-DO LIST:
+
+- FIX TITLE HANDLING
+	* done, changed all non-alpha chars to underscores. Ugly but functional...
+- ADD LOOP FOR # PAGES INTO grab_page_links
+- ADD PRESCOUT URL TO DOWNLOADER FOR CLIP NAMING
+- ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
+
 =end
 
 
@@ -105,6 +114,7 @@ $search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 abort "Enter database password!" unless ARGV[0]
 dbpass = ARGV[0]
 searchstring = ARGV[1] ? ARGV[1] : "all"
+# need to scrap all this searchstring stuff and merge with database
 ytpage = $search_prefix + searchstring
 wikipage = "http://en.wikipedia.org/wiki/" + searchstring
 
@@ -124,18 +134,17 @@ pagecount=2
 
 def grab_page_links(ytpage)
 
-	page_hits = Array.new
 	page = $agent.get(ytpage)
+	page_hits = []
+
 	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
+
 		title =  vid.attr('data-context-item-title')
 		uploader = vid.attr('data-context-item-user')
 		#get uploader name from youtube-dl? Succinct but slower.
 		duration = vid.attr('data-context-item-time')
 		url = vid.attr('data-context-item-id')
-
-		#return url,title,uploader,duration
-		page_hits << "#{url}\t#{title}\t#{uploader}\t#{duration}"
-		# need to populate array, then return array!
+		page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
 
 	end
 
@@ -151,7 +160,7 @@ def scrape_wiki_albums(wikipage)
 
 	doc = Nokogiri::HTML(open(wikipage))
 	doc.xpath('//table/caption[contains(text(),"studio album")]/..//th[@scope="row"]//a').each do |t|
-		
+
 		puts t.attr('href')
 	
 	end
@@ -164,8 +173,9 @@ def update_prescout(url,uploader,duration,searchterm,title)
 	begin
 
 		#change single quotes to escaped quotes for sql statement
-		title = title.gsub("'", %q(\\\'))
-		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		title = title.gsub(/\W/,"_").gsub(/_+/,"_")
+		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		puts title
 
 	rescue Mysql::Error => e
 		pp e
@@ -182,13 +192,11 @@ def build_searchlist()
 		searchterm = r['id']
 		page_hits = grab_page_links(ytpage)
 		page_hits.each do |hit|
-
 			url,title,uploader,duration = hit.split("\t")
-		#	puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
-	#		update_prescout(url,uploader,duration,searchterm,title)
+			#puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
+			update_prescout(url,uploader,duration,searchterm,title)
 	#		NEED TO PASS PRESCOUT_URL ID TO clip downloader
-			download_clips(url)
-			exit
+			#download_clips(url)
 
 		end
 		sleep 3	
@@ -201,7 +209,8 @@ def scrape_youtube()
 end
 
 def download_clips(url)
-	`youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}`
+	puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}\n"
+#	`youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}`
 end
 
 build_searchlist()
