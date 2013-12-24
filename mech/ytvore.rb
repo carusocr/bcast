@@ -98,6 +98,7 @@ TO-DO LIST:
 - FIX TITLE HANDLING
 	* done, changed all non-alpha chars to underscores. Ugly but functional...
 - ADD LOOP FOR # PAGES INTO grab_page_links
+	* done
 - ADD PRESCOUT URL TO DOWNLOADER FOR CLIP NAMING
 - ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
 - ARG PARSING - COMMAND LINE SEARCHTERM, WIKI ALBUM SEARCH, REG DB SEARCH
@@ -172,14 +173,15 @@ def update_prescout(url,uploader,duration,searchterm,title)
 
 	begin
 
-		#change single quotes to escaped quotes for sql statement
-		title = title.gsub(/\W/,"_").gsub(/_+/,"_")
+		#change single quotes to escaped quotes for sql statement, strip trailing _
+		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
 		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
 		puts title
 
 	rescue Mysql::Error => e
 		pp e
 	end
+
 end
 
 def build_searchlist()
@@ -190,23 +192,32 @@ def build_searchlist()
 		ytpage = $search_prefix + "#{r['name']}"
 		puts ytpage
 		searchterm = r['id']
-		page_hits = grab_page_links(ytpage)
-		page_hits.each do |hit|
-			url,title,uploader,duration = hit.split("\t")
-			#puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
-			update_prescout(url,uploader,duration,searchterm,title)
-			puts url
+		scrape_youtube(ytpage)
+		# change this to scrape youtube method?
+#		page_hits = grab_page_links(ytpage)
+#		page_hits.each do |hit|
+#			url,title,uploader,duration = hit.split("\t")
+#			update_prescout(url,uploader,duration,searchterm,title)
+#			puts url
 	#		NEED TO PASS PRESCOUT_URL ID TO clip downloader
 			#download_clips(url)
 
-		end
+#		end
 		sleep 3	
 
 	end
 		
 end
 
-def scrape_youtube()
+def scrape_youtube(ytpage)
+
+	page_hits = grab_page_links(ytpage)
+	page_hits.each do |hit|
+		url,title,uploader,duration = hit.split("\t")
+		update_prescout(url,uploader,duration,searchterm,title) unless ARGV[1] != "all"
+		puts url
+	end
+
 end
 
 def download_clips(url)
