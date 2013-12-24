@@ -195,6 +195,7 @@ def build_searchlist()
 			url,title,uploader,duration = hit.split("\t")
 			#puts "insert into ascout_prescout (url,uploader,duration,searchterm,created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')"
 			update_prescout(url,uploader,duration,searchterm,title)
+			puts url
 	#		NEED TO PASS PRESCOUT_URL ID TO clip downloader
 			#download_clips(url)
 
