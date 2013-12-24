@@ -100,6 +100,7 @@ TO-DO LIST:
 - ADD LOOP FOR # PAGES INTO grab_page_links
 - ADD PRESCOUT URL TO DOWNLOADER FOR CLIP NAMING
 - ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
+- ARG PARSING - COMMAND LINE SEARCHTERM, WIKI ALBUM SEARCH, REG DB SEARCH
 
 =end
 
@@ -113,28 +114,27 @@ require 'nokogiri'
 $search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 abort "Enter database password!" unless ARGV[0]
 dbpass = ARGV[0]
+# keep so we have ability to look for something that's not just db-centric?
 searchstring = ARGV[1] ? ARGV[1] : "all"
-# need to scrap all this searchstring stuff and merge with database
-ytpage = $search_prefix + searchstring
 wikipage = "http://en.wikipedia.org/wiki/" + searchstring
 
 $m = Mysql.new "localhost", "root", "#{dbpass}", "ascout"
 $download_urls = Hash.new
 $existing_urls = []
 $agent = Mechanize.new
-page = $agent.get(ytpage)
 
 #get max number of pages to crawl
-max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
-total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
-pagecount = (total_results < max_pages) ? total_results : max_pages
-
-#added to keep results sane during testing
-pagecount=2
 
 def grab_page_links(ytpage)
 
 	page = $agent.get(ytpage)
+
+	#get max number of pages to search through
+	max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
+	total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
+	pagecount = (total_results < max_pages) ? total_results : max_pages
+	#added to keep results sane during testing
+	pagecount=2
 	page_hits = []
 
 	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
