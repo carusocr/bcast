@@ -115,9 +115,10 @@ require 'nokogiri'
 require 'optparse'
 
 OptionParser.new do |o|
-	o.on('-s SEARCHTERM') {|b| $searchstring = b}
-	o.on('-p DBPASS') {|b| $dbpass = b}
-	o.on('-h') {puts o; exit}
+	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
+	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
+	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
+	o.on('-h','--help','Print this help text') {puts o; exit}
 	o.parse!
 end
 
