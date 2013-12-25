@@ -64,6 +64,7 @@ New tables for ascout:
   `event` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
 	`active` boolean default 0,
   PRIMARY KEY (`id`),
   KEY `event` (`event`),
@@ -77,6 +78,7 @@ New tables for ascout:
 | event   | int(11)      | NO   | MUL | NULL    |                |
 | name    | varchar(255) | NO   |     | NULL    |                |
 | created | datetime     | YES  |     | NULL    |                |
+| updated | datetime     | YES  |     | NULL    |                |
 | active  | tinyint(1)   | YES  |     | 0       |                |
 | aud_only| tinyint(1)   | YES  |     | 0       |                |
 +---------+--------------+------+-----+---------+----------------+
@@ -110,16 +112,22 @@ require 'mysql'
 require 'open-uri'
 require 'mechanize'
 require 'nokogiri'
+require 'optparse'
+
+OptionParser.new do |o|
+	o.on('-s SEARCHTERM') {|b| $searchstring = b}
+	o.on('-p DBPASS') {|b| $dbpass = b}
+	o.on('-h') {puts o; exit}
+	o.parse!
+end
 
 #nfpr = don't replace searchterm
 $search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
-abort "Enter database password!" unless ARGV[0]
-dbpass = ARGV[0]
+abort "Enter database password!" unless $dbpass
 # keep so we have ability to look for something that's not just db-centric?
 searchstring = ARGV[1] ? ARGV[1] : "all"
-wikipage = "http://en.wikipedia.org/wiki/" + searchstring
 
-$m = Mysql.new "localhost", "root", "#{dbpass}", "ascout"
+$m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
 $download_urls = Hash.new
 $existing_urls = []
 $agent = Mechanize.new
@@ -155,6 +163,7 @@ end
 
 def scrape_wiki_albums(wikipage)
 
+	wikipage = "http://en.wikipedia.org/wiki/" + $searchstring
 	wikipage += "_discography"
 
 	#this depends on consistent naming conventions and existence of <artist>_discography Wikipage
@@ -226,11 +235,3 @@ def download_clips(url)
 end
 
 build_searchlist()
-
-#scrape_wiki_albums(agent,wikipage)
-
-#for i in 1..pagecount
-#	ytpage = search_prefix + searchstring + "&page=#{i}"
-#	puts ytpage
-#grab_page_links(agent,ytpage)
-#end
