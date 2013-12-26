@@ -125,39 +125,41 @@ end
 #nfpr = don't replace searchterm
 $search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 abort "Enter database password!" unless $dbpass
-# keep so we have ability to look for something that's not just db-centric?
-searchstring = ARGV[1] ? ARGV[1] : "all"
 
 $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
 $download_urls = Hash.new
-$existing_urls = []
 $agent = Mechanize.new
-
-#get max number of pages to crawl
 
 def grab_page_links(ytpage)
 
 	page = $agent.get(ytpage)
 
-	#get max number of pages to search through
+	#get max number of pages to crawl
 	max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
 	total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
 	pagecount = (total_results < max_pages) ? total_results : max_pages
 	#added to keep results sane during testing
 	pagecount=2
 	page_hits = []
+	
+	ytpage = ytpage + "&page=1"
+	for i in 1..pagecount
 
-	page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
+		ytpage.sub!(/page=\d+/,"page=#{i}")
+		page = $agent.get(ytpage)
 
-		title =  vid.attr('data-context-item-title')
-		uploader = vid.attr('data-context-item-user')
-		#get uploader name from youtube-dl? Succinct but slower.
-		duration = vid.attr('data-context-item-time')
-		url = vid.attr('data-context-item-id')
-		page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+		page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
+
+			title =  vid.attr('data-context-item-title')
+			uploader = vid.attr('data-context-item-user')
+			#get uploader name from youtube-dl? Succinct but slower.
+			duration = vid.attr('data-context-item-time')
+			url = vid.attr('data-context-item-id')
+			page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+
+		end
 
 	end
-
 	return page_hits
 
 end
@@ -196,14 +198,19 @@ end
 
 def build_searchlist()
 
+	if $searchstring
+		puts "Search string is #{$searchstring}!"
+		ytpage = $search_prefix + $searchstring
+		scrape_youtube(ytpage)
+		exit
+	end
 	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
 	ytq.each_hash do |r|
 		
 		ytpage = $search_prefix + "#{r['name']}"
-		puts ytpage
+		#puts ytpage
 		searchterm = r['id']
 		scrape_youtube(ytpage)
-		# change this to scrape youtube method?
 #		page_hits = grab_page_links(ytpage)
 #		page_hits.each do |hit|
 #			url,title,uploader,duration = hit.split("\t")
