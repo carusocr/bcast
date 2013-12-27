@@ -64,8 +64,9 @@ New tables for ascout:
   `event` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `created` datetime DEFAULT NULL,
-  `updated` datetime DEFAULT NULL,
+  `last_checked` datetime DEFAULT NULL,
 	`active` boolean default 0,
+	`aud_only` boolean default 0,
   PRIMARY KEY (`id`),
   KEY `event` (`event`),
 	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
@@ -118,6 +119,7 @@ OptionParser.new do |o|
 	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
 	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
+  o.on('--recent','Only get videos uploaded after last check') {|b| $check_recent = b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
 	o.parse!
 end
@@ -185,10 +187,7 @@ def update_prescout(url,uploader,duration,searchterm,title)
 
 	begin
 
-		#change single quotes to escaped quotes for sql statement, strip trailing _
-		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
 		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
-		puts title
 
 	rescue Mysql::Error => e
 		pp e
@@ -201,44 +200,41 @@ def build_searchlist()
 	if $searchstring
 		puts "Search string is #{$searchstring}!"
 		ytpage = $search_prefix + $searchstring
-		scrape_youtube(ytpage)
+    searchterm = 'NULL'
+		scrape_youtube(ytpage,searchterm)
 		exit
 	end
 	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
 	ytq.each_hash do |r|
 		
 		ytpage = $search_prefix + "#{r['name']}"
-		#puts ytpage
 		searchterm = r['id']
-		scrape_youtube(ytpage)
-#		page_hits = grab_page_links(ytpage)
-#		page_hits.each do |hit|
-#			url,title,uploader,duration = hit.split("\t")
-#			update_prescout(url,uploader,duration,searchterm,title)
-#			puts url
-	#		NEED TO PASS PRESCOUT_URL ID TO clip downloader
-			#download_clips(url)
-
-#		end
+		scrape_youtube(ytpage,searchterm)
 		sleep 3	
 
 	end
 		
 end
 
-def scrape_youtube(ytpage)
+def scrape_youtube(ytpage,searchterm)
 
 	page_hits = grab_page_links(ytpage)
 	page_hits.each do |hit|
+
 		url,title,uploader,duration = hit.split("\t")
-		update_prescout(url,uploader,duration,searchterm,title) unless ARGV[1] != "all"
-		puts url
+		#change single quotes to escaped quotes for sql statement, strip trailing _
+		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
+		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring 
+		#update_prescout(url,uploader,duration,searchterm,title)
+    download_clips(url,title)
+
 	end
 
 end
 
-def download_clips(url)
-	puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}\n"
+def download_clips(url,title)
+	puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
+  #	add --dateafter 
 #	`youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}`
 end
 
