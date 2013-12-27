@@ -128,6 +128,7 @@ end
 $search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 abort "Enter database password!" unless $dbpass
 
+$datadir = "~/projects/bcast/mech"
 $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
 $download_urls = Hash.new
 $agent = Mechanize.new
@@ -187,7 +188,7 @@ def update_prescout(url,uploader,duration,searchterm,title)
 
 	begin
 
-		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
 
 	rescue Mysql::Error => e
 		pp e
@@ -225,17 +226,22 @@ def scrape_youtube(ytpage,searchterm)
 		#change single quotes to escaped quotes for sql statement, strip trailing _
 		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
 		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring 
-		#update_prescout(url,uploader,duration,searchterm,title)
-    download_clips(url,title)
+    #push info into hash, then download everything 
+    $download_urls["#{url}"] = title
+    #download_clips(url,title)
+
 
 	end
 
 end
 
-def download_clips(url,title)
-	puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
-  #	add --dateafter 
-#	`youtube-dl -w -f mp4 -o downloads/#{url}.mp4 #{url}`
+def download_clips()
+  $download_urls.sort_by.each do |url, title|
+	  puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
+    #	add --dateafter 
+	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
+  end
 end
 
 build_searchlist()
+download_clips()
