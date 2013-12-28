@@ -121,6 +121,7 @@ OptionParser.new do |o|
 	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
   o.on('--recent','Only get videos uploaded after last check') {|b| $check_recent = b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
+	o.on('-n','Don\'t update database with found clips') {|b| $no_db_update = b} 
 	o.parse!
 end
 
@@ -186,12 +187,28 @@ end
 
 def update_prescout(url,uploader,duration,searchterm,title)
 
+	return 0 if $db_no_update == true
 	begin
 
-		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		puts "update..."
+		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
 
 	rescue Mysql::Error => e
 		pp e
+	end
+
+end
+
+def update_searchterm(id)
+
+	begin
+
+		$m.query("update ascout_searchterm set updated = current_timestamp where id = '#{id}'")
+
+	rescue Mysql::Error => e
+
+		pp e
+
 	end
 
 end
@@ -211,9 +228,14 @@ def build_searchlist()
 		ytpage = $search_prefix + "#{r['name']}"
 		searchterm = r['id']
 		scrape_youtube(ytpage,searchterm)
-		sleep 3	
+		#sleep 3	
 
 	end
+	
+	#get searchterm update working
+	#st_id = ytq.fetch_row['id']
+	#puts st_id.class	
+	#	update_searchterm(id)
 		
 end
 
@@ -225,11 +247,9 @@ def scrape_youtube(ytpage,searchterm)
 		url,title,uploader,duration = hit.split("\t")
 		#change single quotes to escaped quotes for sql statement, strip trailing _
 		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
-		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring 
+		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring
     #push info into hash, then download everything 
     $download_urls["#{url}"] = title
-    #download_clips(url,title)
-
 
 	end
 
@@ -244,4 +264,4 @@ def download_clips()
 end
 
 build_searchlist()
-download_clips()
+#download_clips()
