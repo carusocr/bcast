@@ -106,6 +106,9 @@ TO-DO LIST:
 - ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
 - ARG PARSING - COMMAND LINE SEARCHTERM, WIKI ALBUM SEARCH, REG DB SEARCH
 
+Use more hashes of hashes?
+zug = Hash.new{|h,k| h[k] = Hash.new}
+
 =end
 
 
@@ -119,7 +122,7 @@ OptionParser.new do |o|
 	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
 	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
-  o.on('--recent','Only get videos uploaded after last check') {|b| $check_recent = b}
+  o.on('-r','--recent','Only get videos uploaded after last check') {|b| $check_recent = b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
 	o.on('-n','Don\'t update database with found clips') {|b| $no_db_update = b} 
 	o.parse!
@@ -131,7 +134,8 @@ abort "Enter database password!" unless $dbpass
 
 $datadir = "~/projects/bcast/mech"
 $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
-$download_urls = Hash.new
+#$download_urls = Hash.new
+$download_urls = Hash.new{|h,k| h[k] = Hash.new}
 $agent = Mechanize.new
 
 def grab_page_links(ytpage)
@@ -190,8 +194,7 @@ def update_prescout(url,uploader,duration,searchterm,title)
 	return 0 if $db_no_update == true
 	begin
 
-		puts "update..."
-		#$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
 
 	rescue Mysql::Error => e
 		pp e
@@ -228,15 +231,10 @@ def build_searchlist()
 		ytpage = $search_prefix + "#{r['name']}"
 		searchterm = r['id']
 		scrape_youtube(ytpage,searchterm)
-		#sleep 3	
+		sleep 3	
 
 	end
 	
-	#get searchterm update working
-	#st_id = ytq.fetch_row['id']
-	#puts st_id.class	
-	#	update_searchterm(id)
-		
 end
 
 def scrape_youtube(ytpage,searchterm)
@@ -248,20 +246,24 @@ def scrape_youtube(ytpage,searchterm)
 		#change single quotes to escaped quotes for sql statement, strip trailing _
 		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
 		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring
-    #push info into hash, then download everything 
-    $download_urls["#{url}"] = title
+    #populate hash of hashes
+    $download_urls["#{url}"]['title'] = title
 
 	end
 
 end
 
 def download_clips()
-  $download_urls.sort_by.each do |url, title|
+  $download_urls.sort_by.each do |u|
+    #this makes [0] the hash key, i.e. the unique url string
+    url = u[1]['url']
+    url = u[0]
+    title = u[1]['title']
 	  puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
     #	add --dateafter 
-	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
+#	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
   end
 end
 
 build_searchlist()
-#download_clips()
+download_clips()
