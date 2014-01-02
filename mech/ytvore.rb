@@ -138,7 +138,14 @@ $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
 $download_urls = Hash.new{|h,k| h[k] = Hash.new}
 $agent = Mechanize.new
 
+
+# Add 
+#https://www.googleapis.com/youtube/v3/search?part=snippet&publishedAfter=2011-01-01T00%3A00%3A00Z&q=coke&type=video&videoDefinition=high&videoDuration=short&key={YOUR_API_KEY}
+#
+
 def grab_page_links(ytpage)
+
+	#add in date filters here as well, if specified
 
 	page = $agent.get(ytpage)
 
@@ -147,7 +154,7 @@ def grab_page_links(ytpage)
 	total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
 	pagecount = (total_results < max_pages) ? total_results : max_pages
 	#added to keep results sane during testing
-	pagecount=2
+	#pagecount=2
 	page_hits = []
 	
 	ytpage = ytpage + "&page=1"
@@ -163,7 +170,9 @@ def grab_page_links(ytpage)
 			#get uploader name from youtube-dl? Succinct but slower.
 			duration = vid.attr('data-context-item-time')
 			url = vid.attr('data-context-item-id')
-			page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+			unless (url =~ /^PL/) #if not part of playlist
+				page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+			end
 
 		end
 
@@ -191,7 +200,7 @@ end
 
 def update_prescout(url,uploader,duration,searchterm,title)
 
-	return 0 if $db_no_update == true
+	return 0 if $no_db_update == true
 	begin
 
 		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
@@ -231,7 +240,7 @@ def build_searchlist()
 		ytpage = $search_prefix + "#{r['name']}"
 		searchterm = r['id']
 		scrape_youtube(ytpage,searchterm)
-		sleep 3	
+		#sleep 3	
 
 	end
 	
@@ -259,7 +268,7 @@ def download_clips()
     url = u[1]['url']
     url = u[0]
     title = u[1]['title']
-	  puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
+	  #puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
     #	add --dateafter 
 #	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
   end

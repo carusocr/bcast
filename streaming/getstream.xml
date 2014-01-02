@@ -155,7 +155,7 @@
   <SrcDef id="19" lang="eng">
     <Src>LBC973</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC973</Url>
-		<Dialect>gbe</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>y</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
@@ -163,7 +163,7 @@
   <SrcDef id="20" lang="eng">
     <Src>LBC1152</Src>
     <Url descr="stream_url">rtmp://cdn-sov-2.musicradio.com:80/LiveAudio/LBC1152</Url>
-		<Dialect>gbe</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>n</Download>
 		<Cmd>rtmpdump</Cmd>
 		<Ext>flv</Ext>
@@ -251,7 +251,7 @@
 	<SrcDef id="31" lang="eng">
 		<Src>bfbs1</Src>
 		<Url descr="stream_url">http://icy-e-04.sharp-stream.com:80/ssvcbfbs1.mp3</Url>
-		<Dialect>eng</Dialect>
+		<Dialect>gbr</Dialect>
 		<Download>n</Download>
 		<Cmd>mplayer</Cmd>
 		<Ext>mp3</Ext>
