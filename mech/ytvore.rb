@@ -100,15 +100,12 @@ TO-DO LIST:
 
 - FIX TITLE HANDLING
 	* done, changed all non-alpha chars to underscores. Ugly but functional...
-- ADD LOOP FOR # PAGES INTO grab_page_links
-	* done
+	* get users handle instead of longer name, too?
 - ADD PRESCOUT URL TO DOWNLOADER FOR CLIP NAMING
 - ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
-- ARG PARSING - COMMAND LINE SEARCHTERM, WIKI ALBUM SEARCH, REG DB SEARCH
-
-Use more hashes of hashes?
-zug = Hash.new{|h,k| h[k] = Hash.new}
-
+this works via &filters=(today|week|month)
+syntax is &filters=today,+nextfilter,+nextfilter. Comma is %2C
+- Add some sort of freeball mode that doesn't depend on database connectivity at all, just searches and downloads - how to avoid uniques, check download directory?
 =end
 
 
@@ -121,15 +118,21 @@ require 'optparse'
 OptionParser.new do |o|
 	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
-	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
-  o.on('-r','--recent','Only get videos uploaded after last check') {|b| $check_recent = b}
+  o.on('-d {today|week|month}','Only get videos uploaded during the past day/week/month') {|b| $date_filter= '&filters=' + b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
 	o.on('-n','Don\'t update database with found clips') {|b| $no_db_update = b} 
+	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
+	o.on('-l max-pages','Limit page hits, YouTube returns max 50 pages, 20 videos per page') {|b| $pagecount = b.to_i}
 	o.parse!
 end
 
 #nfpr = don't replace searchterm
-$search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
+#filters for date queries
+if $date_filter
+	$search_prefix = "http://www.youtube.com/results?nfpr=1#{$date_filter}&search_query="
+else	
+	$search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
+end
 abort "Enter database password!" unless $dbpass
 
 $datadir = "~/projects/bcast/mech"
@@ -152,13 +155,14 @@ def grab_page_links(ytpage)
 	#get max number of pages to crawl
 	max_pages = 50 #youtube won't handle more than 1000 results and there are 20 per page
 	total_results = page.parser.xpath('//p[starts-with(@class, "num-results")]/strong').text.sub(',','').to_i/20
-	pagecount = (total_results < max_pages) ? total_results : max_pages
+	unless $pagecount #skip if pagecount has been specified in args
+		$pagecount = (total_results < max_pages) ? total_results : max_pages
+	end
 	#added to keep results sane during testing
-	#pagecount=2
 	page_hits = []
 	
 	ytpage = ytpage + "&page=1"
-	for i in 1..pagecount
+	for i in 1..$pagecount
 
 		ytpage.sub!(/page=\d+/,"page=#{i}")
 		page = $agent.get(ytpage)
@@ -268,7 +272,7 @@ def download_clips()
     url = u[1]['url']
     url = u[0]
     title = u[1]['title']
-	  #puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
+	  puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
     #	add --dateafter 
 #	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
   end
