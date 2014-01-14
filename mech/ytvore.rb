@@ -120,7 +120,8 @@ OptionParser.new do |o|
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
   o.on('-d {today|week|month}','Only get videos uploaded during the past day/week/month') {|b| $date_filter= '&filters=' + b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
-	o.on('-n','Don\'t update database with found clips') {|b| $no_db_update = b} 
+	o.on('--no-db','Don\'t update database with found clips') {|b| $no_db_update = true} 
+	o.on('--no-dl','Don\'t download found clips') {|b| $no_download = true} 
 	o.on('-w','Search Wikipedia discographies') {|b| $wikisearch = b}
 	o.on('-l max-pages','Limit page hits, YouTube returns max 50 pages, 20 videos per page') {|b| $pagecount = b.to_i}
 	o.parse!
@@ -165,6 +166,7 @@ def grab_page_links(ytpage)
 	for i in 1..$pagecount
 
 		ytpage.sub!(/page=\d+/,"page=#{i}")
+		puts "Page is #{i}"
 		page = $agent.get(ytpage)
 
 		page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
@@ -236,7 +238,7 @@ def build_searchlist()
 		ytpage = $search_prefix + $searchstring
     searchterm = 'NULL'
 		scrape_youtube(ytpage,searchterm)
-		exit
+		return 0
 	end
 	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
 	ytq.each_hash do |r|
@@ -274,7 +276,9 @@ def download_clips()
     title = u[1]['title']
 	  puts "DLCMD: youtube-dl -w -f mp4 -o downloads/#{title}.mp4 #{url}\n"
     #	add --dateafter 
-#	  `youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
+		unless $no_download == true
+	  	`youtube-dl -w -f mp4 -o #{$datadir}/downloads/#{title}.mp4 #{url}`
+		end
   end
 end
 
