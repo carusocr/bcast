@@ -159,6 +159,8 @@ def grab_page_links(ytpage)
 	unless $pagecount #skip if pagecount has been specified in args
 		$pagecount = (total_results < max_pages) ? total_results : max_pages
 	end
+	puts $pagecount
+	exit
 	#added to keep results sane during testing
 	page_hits = []
 	
