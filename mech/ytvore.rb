@@ -175,12 +175,21 @@ def grab_page_links(ytpage)
 			#get uploader name from youtube-dl? Succinct but slower.
 			duration = vid.attr('data-context-item-time')
 			url = vid.attr('data-context-item-id')
+			puts "#{url}\t#{title}\t#{uploader}\t#{duration}\tZug."
 			unless (url =~ /^PL/) #if not part of playlist
 				page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
 			end
 
 		end
 
+    #this xpath no longer works...playing with new source
+
+
+		page.parser.xpath('//a[contains(@class, "yt-uix-sessionlink")]').each do |vid|
+
+      puts vid.attr('href')
+
+    end
 	end
 	return page_hits
 
@@ -237,6 +246,7 @@ def build_searchlist()
 		ytpage = $search_prefix + $searchstring
     searchterm = 'NULL'
 		scrape_youtube(ytpage,searchterm)
+    puts ytpage
 		return 0
 	end
 	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
