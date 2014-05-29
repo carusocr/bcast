@@ -182,18 +182,18 @@ def grab_page_links(ytpage)
 
 		end
 
-    #page.parser.xpath('//a[contains(@class, "yt-uix-sessionlink")][.//span[contains(@class,"video-time")]]').each do |vid|
-    page.parser.xpath('//a[contains(@class, "yt-uix-sessionlink")]').each do |vid|
+    page.parser.xpath('//a[contains(@class, "ux-thumb-wrap yt-uix-sessionlink contains-addto")]').each do |vid|
 
-      runtime = vid.xpath('.//span[contains(@class,"video-time")]').text
-      url=''
-      if vid.xpath('.//button/@data-video-ids')
+      if vid.xpath('.//span[contains(@class,"video-time")]').text =~ /\d+/
+        duration = vid.xpath('.//span[contains(@class,"video-time")]').text
+      end
+      if vid.xpath('.//button/@data-video-ids').text =~ /\w+/
         url = vid.xpath('.//button/@data-video-ids').text
       end
-      puts url
-      #puts url.attr('data-video-ids')
-      puts vid.attr('title')
-      puts runtime if runtime =~ /\d+/
+
+      #puts "#{url}\t#{duration}" 
+
+			page_hits.push("#{url}\t#{duration}")
 
     end
 
@@ -219,12 +219,12 @@ def scrape_wiki_albums(wikipage)
 
 end
 
-def update_prescout(url,uploader,duration,searchterm,title)
+def update_prescout(url,duration,searchterm)
 
 	return 0 if $no_db_update == true
 	begin
 
-		$m.query("insert into ascout_prescout (url, uploader, duration, searchterm, created,title) values ('#{url}','#{uploader}',time_to_sec('#{duration}'),'#{searchterm}',current_timestamp,'#{title}')")
+		$m.query("insert into ascout_prescout (url, duration, searchterm, created) values ('#{url}',time_to_sec('00:#{duration}'),'#{searchterm}',current_timestamp)")
 
 	rescue Mysql::Error => e
 		pp e
@@ -273,12 +273,10 @@ def scrape_youtube(ytpage,searchterm)
 	page_hits = grab_page_links(ytpage)
 	page_hits.each do |hit|
 
-		url,title,uploader,duration = hit.split("\t")
-		#change single quotes to escaped quotes for sql statement, strip trailing _
-		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
-		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring
-    #populate hash of hashes
-    $download_urls["#{url}"]['title'] = title
+    puts hit
+
+		url,duration = hit.split("\t")
+		update_prescout(url,duration,searchterm) if !$searchstring
 
 	end
 
