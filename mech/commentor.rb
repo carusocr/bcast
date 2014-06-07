@@ -18,7 +18,29 @@ Notes: use capybara for now since I've moved to that for stockboy?
 require 'mysql'
 require 'capybara'
 require 'capybara/poltergeist'
-require 'capybara/dsl'	#do I need to include this?
+#require 'capybara/dsl'	#do I need to include this?
+
+EMAIL = ARGV[0]
+PASSWD = ARGV[1]
 
 Capybara.run_server = false
 Capybara.current_driver = :selenium #switch to poltergeist later
+Capybara.app_host = 'http://www.youtube.com'
+
+module CapyTesty
+	class Test
+		include Capybara::DSL
+		def test_google
+			visit("https://accounts.google.com/ServiceLogin?hl=en")
+			page.fill_in('Email', :with => EMAIL)
+			page.fill_in('Passwd', :with => PASSWD)
+			page(:button, 'Sign in').click
+			sleep 5
+			#after this: visit a youtube page, try to make comment
+			# https://www.youtube.com/watch?v=4C4deFA0ZfI
+		end
+	end
+end
+
+t = CapyTesty::Test.new
+t.test_youtube
