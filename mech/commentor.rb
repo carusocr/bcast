@@ -34,10 +34,10 @@ module CapyTesty
 			visit("https://accounts.google.com/ServiceLogin?hl=en")
 			page.fill_in('Email', :with => EMAIL)
 			page.fill_in('Passwd', :with => PASSWD)
-			page(:button, 'Sign in').click
+      page.click_button('Sign in')
 			sleep 5
 			#after this: visit a youtube page, try to make comment
-			# https://www.youtube.com/watch?v=4C4deFA0ZfI
+			# visit("http://www.youtube.com/watch?v=uO4lkv-jLRs")
 		end
 	end
 end
