@@ -47,3 +47,7 @@ end
 
 t = TrollMech::GoogleLogin.new
 zug = t.login
+#switch to iframe with comments!
+#page.first(:xpath,"//iframe")[:id]
+#aaand click on comment box! This can't be standard id
+#page.find(:xpath,"//div[@class='RN Nza E5']").click

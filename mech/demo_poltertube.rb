@@ -34,8 +34,13 @@ end
 puts $pagecount
 
 #parse options and click on relevant filters
-#page.find(:button,'Filters').click
-#page.find(:link,option).click
+page.find(:button,'Filters').click
+page.find(:link,'Creative Commons').click
+sleep 1
+page.find(:button,'Filters').click
+page.find(:link,'Short').click
+sleep 1
+
 
 #maybe for i in 1..maxpages, scrape links and then click next
 #page.find(:link,'Next').click
