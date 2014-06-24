@@ -18,8 +18,13 @@ include Capybara::DSL
 $pagecount = 3  #trimmed down for demo/testing
 searchterm = ARGV[0]
 visit('https://www.youtube.com')
+sleep 1
+page.driver.browser.manage.window.resize_to(800,1000)
+sleep 1
 page.fill_in('masthead-search-term', :with => "#{searchterm}")
+sleep 1
 page.first(:button,'Search').click
+sleep 1
 
 #handle max pages to crawl
 total_result_pages = page.first(:xpath,"//p[@class='num-results']").text.gsub(/\D/,'').to_i/20
@@ -43,7 +48,7 @@ page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
   puts "#{title}\t#{duration}\t#{url}"
 end
 
-sleep 1
+sleep 2
 
 for i in 2..$pagecount
   puts "Visiting page #{i}..."
@@ -54,8 +59,8 @@ for i in 2..$pagecount
     title = zug.first(:xpath,"./h3/a")[:text] 
     url = zug.first(:xpath,"./h3/a")[:href]  
     puts "#{title}\t#{duration}\t#{url}"
-    sleep 1
   end
   sleep 2
 #what's with the text dump after this loop?!?
+#text dumps on playlists...exclude these plus user channel links!
 end
