@@ -8,6 +8,13 @@ presentation. Production version isn't going to bother with
 navigating to buttons, but instead will construct URLs 
 and visit them directly.
 
+
+TASKS:
+
+1. Fix max pages so that 23 hits returns two pages. # use to_f.ceil
+2. Add database connection.
+3. Read options from db.
+4. Integrate into downloader/converter.
 =end
 
 require 'capybara'
@@ -26,30 +33,31 @@ sleep 1
 page.first(:button,'Search').click
 sleep 1
 
-#handle max pages to crawl
-total_result_pages = page.first(:xpath,"//p[@class='num-results']").text.gsub(/\D/,'').to_i/20
-unless $pagecount #skip if pagecount has been specified in args
-    $pagecount = (total_results < max_pages) ? total_results : max_pages
-end
-puts $pagecount
-
 #parse options and click on relevant filters
 page.find(:button,'Filters').click
+sleep 1
 page.find(:link,'Creative Commons').click
 sleep 1
 page.find(:button,'Filters').click
+sleep 1
 page.find(:link,'Short').click
 sleep 1
 
-
-#maybe for i in 1..maxpages, scrape links and then click next
-#page.find(:link,'Next').click
+#handle max pages to crawl
+total_results = page.first(:xpath,"//p[@class='num-results']").text.gsub(/\D/,'').to_f/20
+total_result_pages = total_results.ceil
+unless $pagecount #skip if pagecount has been specified in args
+    $pagecount = (total_result_pages < max_pages) ? total_result_pages : max_pages
+end
 
 #gets title + duration + url for items on first page
 page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
+  url = zug.first(:xpath,"./h3/a")[:href]  
+  if url =~ /list=/
+    next
+  end
   duration = zug.first(:xpath,"../div/a/span[@class='video-time']").text  
   title = zug.first(:xpath,"./h3/a")[:text] 
-  url = zug.first(:xpath,"./h3/a")[:href]  
   puts "#{title}\t#{duration}\t#{url}"
 end
 
@@ -60,9 +68,12 @@ for i in 2..$pagecount
   page.find(:link,'Next').click
   sleep 2
   page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
+    url = zug.first(:xpath,"./h3/a")[:href]  
+    if url =~ /list=/
+      next
+    end
     duration = zug.first(:xpath,"../div/a/span[@class='video-time']").text  
     title = zug.first(:xpath,"./h3/a")[:text] 
-    url = zug.first(:xpath,"./h3/a")[:href]  
     puts "#{title}\t#{duration}\t#{url}"
   end
   sleep 2
