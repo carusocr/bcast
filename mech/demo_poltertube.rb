@@ -11,10 +11,10 @@ and visit them directly.
 
 TASKS:
 
-1. Fix max pages so that 23 hits returns two pages. # use to_f.ceil
-2. Add database connection.
-3. Read options from db.
-4. Integrate into downloader/converter.
+1. Add database connection.
+2. Read options from db.
+3. Integrate into downloader/converter.
+
 =end
 
 require 'capybara'

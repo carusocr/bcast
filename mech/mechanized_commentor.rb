@@ -47,7 +47,11 @@ end
 
 t = TrollMech::GoogleLogin.new
 zug = t.login
+# need to scroll down a page so comments iframe loads
+# to scroll down a page: window.scrollBy(0,800)"
 #switch to iframe with comments!
-#page.first(:xpath,"//iframe")[:id]
-#aaand click on comment box! This can't be standard id
-#page.find(:xpath,"//div[@class='RN Nza E5']").click
+#comments = page.first(:xpath,"//iframe")[:id]
+# page.driver.browser.switch_to.frame comments
+# find comment box
+# page.first('span', :text => 'Share your thoughts').click
+# NEED TO LOG IN FIRST, OTHERWISE REDIRECTS TO LOGIN
