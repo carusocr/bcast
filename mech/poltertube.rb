@@ -2,22 +2,20 @@
 
 =begin
 
-youtube searcher + crawler test
-This is a demo version that uses Selenium for a more visual
-presentation. Production version isn't going to bother with 
-navigating to buttons, but instead will construct URLs 
-and visit them directly.
+youtube searcher + crawler
+Differences from demo:
 
-
-TASKS:
-
-1. Add database connection.
-2. Read options from db.
-3. Integrate into downloader/converter.
+1. Headless and not so sleepy.
+2. Will accept set of options on commandline.
+3. Connects to database.
+4. Integrated into downloader/converter.
 
 =end
 
 require 'capybara'
+#require 'capybara/poltergeist'
+require 'sequel'
+require 'optparse'
 
 Capybara.current_driver = :selenium
 include Capybara::DSL
@@ -25,13 +23,9 @@ include Capybara::DSL
 $pagecount = 2  #trimmed down for demo/testing
 searchterm = ARGV[0]
 visit('https://www.youtube.com')
-sleep 1
 page.driver.browser.manage.window.resize_to(800,1000)
-sleep 1
 page.fill_in('masthead-search-term', :with => "#{searchterm}")
-sleep 1
 page.first(:button,'Search').click
-sleep 1
 
 #parse options and click on relevant filters
 page.find(:button,'Filters').click
@@ -41,7 +35,6 @@ sleep 1
 page.find(:button,'Filters').click
 sleep 1
 page.find(:link,'Short').click
-sleep 1
 
 #handle max pages to crawl
 total_results = page.first(:xpath,"//p[@class='num-results']").text.gsub(/\D/,'').to_f/20
@@ -61,12 +54,11 @@ page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
   puts "#{title}\t#{duration}\t#{url}"
 end
 
-sleep 2
-
 for i in 2..$pagecount
   puts "Visiting page #{i}..."
+  sleep 1
   page.find(:link,'Next').click
-  sleep 2
+  sleep 1
   page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
     url = zug.first(:xpath,"./h3/a")[:href]  
     if url =~ /list=/
@@ -76,5 +68,4 @@ for i in 2..$pagecount
     title = zug.first(:xpath,"./h3/a")[:text] 
     puts "#{title}\t#{duration}\t#{url}"
   end
-  sleep 2
 end

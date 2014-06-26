@@ -15,37 +15,26 @@ Concept:
 Notes: use capybara for now since I've moved to that for stockboy?
 =end
 
-require 'mysql'
-require 'mechanize'
+require 'capybara'
+Capybara.current_driver = :selenium
+
 EMAIL = ARGV[0]
 PASSWD = ARGV[1]
+LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
 
 
 
 
-module TrollMech
-	class GoogleLogin
-		def login
-			agent = Mechanize.new
-			agent.open_timeout = 3
-			agent.read_timeout = 4
-			agent.keep_alive = true
-			agent.redirect_ok = true
-			LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
-			login_page = agent.get(LOGIN_URL)
-			login_form = login_page.forms.first
-			login_form.Email = EMAIL
-			login_form.Passwd = PASSWD
-			login_response_page = agent.submit(login_form)
-			#to sign out after this:
-			#login_response_page.link_with(:text => "Sign out").click
-			
-		end
-			#turns out that youtube comments use iframes. Need to switch to capybara?
-	end
+module TrollBot
+  class GoogleLogin
+    include Capybara::DSL
+      def login
+        puts LOGIN_URL
+      end
+  end
 end
 
-t = TrollMech::GoogleLogin.new
+t = TrollBot::GoogleLogin.new
 zug = t.login
 # need to scroll down a page so comments iframe loads
 # to scroll down a page: window.scrollBy(0,800)"
