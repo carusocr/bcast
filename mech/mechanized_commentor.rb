@@ -21,6 +21,7 @@ Capybara.current_driver = :selenium
 EMAIL = ARGV[0]
 PASSWD = ARGV[1]
 LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
+TESTVID = "https://www.youtube.com/watch?v=mhAU9iBJQTs"
 
 
 
@@ -29,15 +30,26 @@ module TrollBot
   class GoogleLogin
     include Capybara::DSL
       def login
-        puts LOGIN_URL
+        visit(LOGIN_URL)
+        page.fill_in('Email', :with => EMAIL)
+        page.fill_in('Passwd', :with => PASSWD)
+        page.click_button('Sign in')
       end
+      def comment
+        visit(TESTVID)
+        #scroll down page so comments frame loads...
+        page.execute_script "window.scrollBy(0,800)"
+        # figure out how to list scripts
+        comments = page.first(:xpath,"//iframe")[:id]
   end
 end
 
 t = TrollBot::GoogleLogin.new
-zug = t.login
+t.login
+sleep 1
 # need to scroll down a page so comments iframe loads
-# to scroll down a page: window.scrollBy(0,800)"
+# to scroll down a page: 
+# page.execute_script "window.scrollBy(0,800)"
 #switch to iframe with comments!
 #comments = page.first(:xpath,"//iframe")[:id]
 # page.driver.browser.switch_to.frame comments
