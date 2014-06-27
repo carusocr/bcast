@@ -40,6 +40,7 @@ module TrollBot
         #scroll down page so comments frame loads...
         page.execute_script "window.scrollBy(0,800)"
         # figure out how to list scripts
+        # check out this page: http://help.dottoro.com/ljhrmrfb.php#dhtmlMethods
         comments = page.first(:xpath,"//iframe")[:id]
   end
 end
