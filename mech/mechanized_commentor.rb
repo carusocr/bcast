@@ -50,7 +50,6 @@ t.login
 sleep 1
 # need to scroll down a page so comments iframe loads
 # to scroll down a page: 
-# page.execute_script "window.scrollBy(0,800)"
 #switch to iframe with comments!
 #comments = page.first(:xpath,"//iframe")[:id]
 # page.driver.browser.switch_to.frame comments

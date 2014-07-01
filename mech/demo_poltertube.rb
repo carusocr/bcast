@@ -22,7 +22,7 @@ require 'capybara'
 Capybara.current_driver = :selenium
 include Capybara::DSL
 
-$pagecount = 2  #trimmed down for demo/testing
+$pagecount = 3  #trimmed down for demo/testing
 searchterm = ARGV[0]
 visit('https://www.youtube.com')
 sleep 1
@@ -51,13 +51,13 @@ unless $pagecount #skip if pagecount has been specified in args
 end
 
 #gets title + duration + url for items on first page
-page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
-  url = zug.first(:xpath,"./h3/a")[:href]  
+page.all(:xpath,"//div[@class='yt-lockup-content']").each do |elem|
+  url = elem.first(:xpath,"./h3/a")[:href]  
   if url =~ /list=/
     next
   end
-  duration = zug.first(:xpath,"../div/a/span[@class='video-time']").text  
-  title = zug.first(:xpath,"./h3/a")[:text] 
+  duration = elem.first(:xpath,"../div/a/span[@class='video-time']").text  
+  title = elem.first(:xpath,"./h3/a")[:text] 
   puts "#{title}\t#{duration}\t#{url}"
 end
 
@@ -67,13 +67,13 @@ for i in 2..$pagecount
   puts "Visiting page #{i}..."
   page.find(:link,'Next').click
   sleep 2
-  page.all(:xpath,"//div[@class='yt-lockup-content']").each do |zug|
-    url = zug.first(:xpath,"./h3/a")[:href]  
+  page.all(:xpath,"//div[@class='yt-lockup-content']").each do |elem|
+    url = elem.first(:xpath,"./h3/a")[:href]  
     if url =~ /list=/
       next
     end
-    duration = zug.first(:xpath,"../div/a/span[@class='video-time']").text  
-    title = zug.first(:xpath,"./h3/a")[:text] 
+    duration = elem.first(:xpath,"../div/a/span[@class='video-time']").text  
+    title = elem.first(:xpath,"./h3/a")[:text] 
     puts "#{title}\t#{duration}\t#{url}"
   end
   sleep 2
