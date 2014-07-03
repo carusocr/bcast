@@ -3,11 +3,11 @@ bcast
 
 Broadcast Collection Support Software Repository
 
-##scola_scrape.rb:
+###scola_scrape.rb:
 
 Web scraper for SCOLA.org broadcast schedule. Currently runs with 'ruby scola_scrape.rb' and writes to test database db/test.db which can be cleared with db/schema.rb (which contains the table definition) Could be set up to run with MySQL by modifying config.yaml and then run as a cron job (see config tips below)
 
-###Table Schema
+####Table Schema
 The table schema is stored in db/schema.rb but essentially has the following structure:
 id|prog_id|iso_ln|iso_cn|start_time|day|duration|first_seen|last_seen|n_lang|n_country|channel
 
@@ -35,9 +35,14 @@ When setting up on a new system be aware of the following issues:
 ### Maintenance
 You can run the scraper outside of cron if you are using ruby 1.9.3 and have bundled to ensure latest versions of nokogiri et. al., it will run simply by invoked 'ruby scola_scrape.rb' from the command line. The same is true for the utility class (normalize.rb) however running it will simply reinitialize the dictionarys it has for language and country ISO data from the files in /lib ...
 
-ytdl
+##ytdl
 ======
 
 Contains youtube downloader scripts.
 
 option to download all user uploads: youtube-dl -citw ytuser:[USERNAME]
+
+##mech
+======
+
+Home to automation experiments.

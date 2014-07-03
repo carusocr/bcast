@@ -26,22 +26,22 @@ $pagecount = 3  #trimmed down for demo/testing
 searchterm = ARGV[0]
 visit('https://www.youtube.com')
 sleep 1
-page.driver.browser.manage.window.resize_to(800,1000)
-sleep 1
+page.driver.browser.manage.window.resize_to(700,1000)
+sleep 2
 page.fill_in('masthead-search-term', :with => "#{searchterm}")
-sleep 1
+sleep 2
 page.first(:button,'Search').click
-sleep 1
+sleep 2
 
 #parse options and click on relevant filters
 page.find(:button,'Filters').click
-sleep 1
+sleep 2
 page.find(:link,'Creative Commons').click
-sleep 1
+sleep 2
 page.find(:button,'Filters').click
-sleep 1
+sleep 2
 page.find(:link,'Short').click
-sleep 1
+sleep 2
 
 #handle max pages to crawl
 total_results = page.first(:xpath,"//p[@class='num-results']").text.gsub(/\D/,'').to_f/20
