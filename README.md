@@ -3,7 +3,10 @@ bcast
 
 Broadcast Collection Support Software Repository
 
-###scola_scrape.rb:
+###scola_scrape:
+======
+
+####scola_scrape.rb
 
 Web scraper for SCOLA.org broadcast schedule. Currently runs with 'ruby scola_scrape.rb' and writes to test database db/test.db which can be cleared with db/schema.rb (which contains the table definition) Could be set up to run with MySQL by modifying config.yaml and then run as a cron job (see config tips below)
 
@@ -25,24 +28,43 @@ Where:
 * __n_country__ is the kd-normalized form of the country as scraped
 * __channel__ is the integer 1-8 representation of the channel from which this record was scraped
 
-### Config tips
+#### Config tips
 When setting up on a new system be aware of the following issues:
 * Make sure you have cron permissions
 * Point at the full path of a valid ruby install (1.9.3) with required gems
 * Scraper itself does not mail out errors but will print success and failure logs to stdout, you can (and should) pipe those to mailx to make sure that if there are issues that you catch them
 * You may have encoding issues in cron, you can make sure you have the right encoding in the folder by checking for en_US.utf8 in the localize -a for the containing folder. You may have to add 'LANG=en_US.utf8' to the crontab folder if the shell is not in the proper environment.
 
-### Maintenance
+#### Maintenance
 You can run the scraper outside of cron if you are using ruby 1.9.3 and have bundled to ensure latest versions of nokogiri et. al., it will run simply by invoked 'ruby scola_scrape.rb' from the command line. The same is true for the utility class (normalize.rb) however running it will simply reinitialize the dictionarys it has for language and country ISO data from the files in /lib ...
 
-##ytdl
+###ytdl
 ======
 
 Contains youtube downloader scripts.
 
+####youtube-dl
+
 option to download all user uploads: youtube-dl -citw ytuser:[USERNAME]
 
-##mech
+###mech
 ======
 
 Home to automation experiments.
+
+####ytvore.rb
+
+Connects to MySQL database to assemble list of search terms, uses capybara to headlessly navigate to YouTube and searches for videos, enters list of results as basic annotations into database, downloads videos, converts to standardized format if necessary.
+
+####demo_poltertube.rb
+
+Demo of YouTube page scraping using capybara+selenium.
+
+####phocomp.rb
+
+Testing out image scraping...started with Yahoo image search.
+
+####mechanized_commenter.rb
+
+Final version of this script will log into Google Accounts, navigate to a YouTube video based on search term (i.e. 'jiu-jitsu'), make a comment based on search term (i.e. 'your jiu-jitsu is terrible'), notate in database when and where comment was made, wait a period of time, then return to page later and scrape replies to comment. 
+
