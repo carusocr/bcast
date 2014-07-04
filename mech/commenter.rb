@@ -38,15 +38,18 @@ module TrollBot
       def comment
         visit(TESTVID)
         #scroll down page so comments frame loads...
-        page.execute_script "window.scrollBy(0,800)"
+        page.execute_script "window.scrollBy(0,400)"
+        sleep 2
         # figure out how to list scripts
         # check out this page: http://help.dottoro.com/ljhrmrfb.php#dhtmlMethods
         comments = page.first(:xpath,"//iframe")[:id]
+      end
   end
 end
 
 t = TrollBot::GoogleLogin.new
 t.login
+t.comment
 sleep 1
 # need to scroll down a page so comments iframe loads
 # to scroll down a page: 
