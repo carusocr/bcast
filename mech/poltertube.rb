@@ -77,10 +77,19 @@ def scrape_vimeo
   upload_date = 'year'  #can be day/week/month/year/any
 
   visit('https://vimeo.com/watch')
+  # can visit vimeo.com/search and avoid first searchclick
+  # different search name though:
+  # page.fill_in('q', :with => 'changing tire')
+  # page.click_button('Find') <---cleaner than page.first
+  # gets to same results page
   page.driver.browser.manage.window.resize_to(800,1000)
   page.first(:button,'Search').click
   page.fill_in('search_field', :with => "#{$searchterm}")
   page.first(:button,'Search').click
+  sleep 1
+  max_results = first(:xpath,"//section[@id = 'search_results_help']/p/em").text.sub(',','')[/(\d+)/,1].to_i
+  sleep 1
+  puts max_results
   page.all(:xpath,"//li[contains(@id, 'clip_')]/a").each do |clip|
     title = clip[:title]
     url = clip[:href]
@@ -89,7 +98,7 @@ def scrape_vimeo
 
 =begin
 
-Using advanced options:
+Using Vimeo advanced options:
 
 page.first(:xpath,"//a[@class='advanced_options']").click
 
@@ -101,6 +110,14 @@ page.fill_in('duration_max', :with => "#{$maxdur}")
 Filtering by date uploaded...simpler method of selecting from dropdowns?
 
 find("option[value=upload_date]").click
+
+Clicking through to next page:
+
+find(:xpath,"//li[@class='pagination_next']").click
+
+Finding max page results:
+
+max_results = first(:xpath,"//section[@id = 'search_results_help']/p/em").text.sub(',','')[/(\d+)/,1].to_i
 
 =end
 
