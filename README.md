@@ -11,6 +11,9 @@ Home to automation experiments.
 ####ytvore.rb:
 Connects to MySQL database to assemble list of search terms, uses capybara to headlessly navigate to YouTube and searches for videos, enters list of results as basic annotations into database, downloads videos, converts to standardized format if necessary.
 
+####poltertube.rb:
+Scrapes YouTube and Vimeo for videos matching searchterms. 
+
 ####demo_poltertube.rb:
 Demo of YouTube page scraping using capybara+selenium.
 
