@@ -83,7 +83,8 @@ def scrape_vimeo
   click_button('Find')
   max_results = first(:xpath,"//section[@id = 'search_results_help']/p/em").text.sub(',','')[/(\d+)/,1].to_i/10
   sleep 1
-  puts max_results
+  #dev max_results value
+  max_results = 10
   page.all(:xpath,"//li[contains(@id, 'clip_')]/a").each do |clip|
     title = clip[:title]
     url = clip[:href]
