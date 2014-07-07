@@ -75,16 +75,18 @@ end
 def scrape_vimeo
 
   upload_date = 'month'  #can be day/week/month/year/any
-  find("option[value=#{upload_date}]").click
 
   visit('https://vimeo.com/search')
-  page.driver.browser.manage.window.resize_to(800,1000)
+  page.driver.browser.manage.window.resize_to(1000,1000)
   fill_in('q', :with => 'changing tire')
   click_button('Find')
   max_results = first(:xpath,"//section[@id = 'search_results_help']/p/em").text.sub(',','')[/(\d+)/,1].to_i/10
   sleep 1
+  page.first(:xpath,"//a[@class='advanced_options']").click
+  find("option[value=#{upload_date}]").click
+  sleep 1
   #dev max_results value
-  max_results = 10
+  max_results = 20
   page.all(:xpath,"//li[contains(@id, 'clip_')]/a").each do |clip|
     title = clip[:title]
     url = clip[:href]
@@ -127,3 +129,4 @@ max_results = first(:xpath,"//section[@id = 'search_results_help']/p/em").text.s
 end
 
 scrape_vimeo
+#scrape_youtube

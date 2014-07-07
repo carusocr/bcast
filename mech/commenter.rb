@@ -26,28 +26,26 @@ TESTVID = "https://www.youtube.com/watch?v=mhAU9iBJQTs"
 
 
 
-module TrollBot
-  class GoogleLogin
-    include Capybara::DSL
-      def login
-        visit(LOGIN_URL)
-        page.fill_in('Email', :with => EMAIL)
-        page.fill_in('Passwd', :with => PASSWD)
-        page.click_button('Sign in')
-      end
-      def comment
-        visit(TESTVID)
-        #scroll down page so comments frame loads...
-        page.execute_script "window.scrollBy(0,400)"
-        sleep 2
-        # figure out how to list scripts
-        # check out this page: http://help.dottoro.com/ljhrmrfb.php#dhtmlMethods
-        comments = page.first(:xpath,"//iframe")[:id]
-      end
-  end
+class GoogleLogin
+  include Capybara::DSL
+    def login
+      visit(LOGIN_URL)
+      page.fill_in('Email', :with => EMAIL)
+      page.fill_in('Passwd', :with => PASSWD)
+      page.click_button('Sign in')
+    end
+    def comment
+      visit(TESTVID)
+      #scroll down page so comments frame loads...
+      page.execute_script "window.scrollBy(0,400)"
+      sleep 2
+      # figure out how to list scripts
+      # check out this page: http://help.dottoro.com/ljhrmrfb.php#dhtmlMethods
+      comments = page.first(:xpath,"//iframe")[:id]
+    end
 end
 
-t = TrollBot::GoogleLogin.new
+t = GoogleLogin.new
 t.login
 t.comment
 sleep 1
