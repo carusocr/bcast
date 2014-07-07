@@ -59,3 +59,8 @@ sleep 1
 # find comment box
 # page.first('span', :text => 'Share your thoughts').click
 # NEED TO LOG IN FIRST, OTHERWISE REDIRECTS TO LOGIN
+
+#set value of text in element?
+# /html/body/div/div/div/div/div[2]/div[2]/div/div/div[5]/div/div/div
+# //*[@id=":u.f"]
+# 
