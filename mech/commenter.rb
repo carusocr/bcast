@@ -84,4 +84,11 @@ page.driver.browser.action.move_to(cbox).perform
 
 The text edit div is one with a role='textbox' tag.
 
+page.first(:xpath,"//div[contains(@id,':')]",:visible=>false)[:class]
+
+more progress, got this error:
+
+Selenium::WebDriver::Error::ElementNotVisibleError: Element is not currently visible and so may not be interacted with
+from [remote server] file:///var/folders/nD/nDNsuhVXFiyh2wjEgJ0eXk+++TI/-Tmp-/webdriver-profile20140708-54519-10ezhca/extensions/fxdriver@googlecode.com/components/command_processor.js:8225:5:in `fxdriver.preconditions.visible'
+
 =end
