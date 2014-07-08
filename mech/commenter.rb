@@ -62,3 +62,26 @@ sleep 1
 # /html/body/div/div/div/div/div[2]/div[2]/div/div/div[5]/div/div/div
 # //*[@id=":u.f"]
 # 
+#eureka?
+# type 'zugzug' in comments box
+# page.first(:xpath,"//div[@id=':u.f']").text
+# returns 'zugzug'
+# page.first(:xpath,"//div[@id=':u.f']").set "test"
+# comments text changes to 'test'
+=begin
+
+notes on wrangling with comment box
+
+- can click on box, but no blinking text cursor shows up. 
+- if I manually type some text and then delete it, I can then run:
+  page.first(:xpath,"//div[@contenteditable='true']").set 'zug'
+and successfully change text in field. Can't enter text after first click though.
+
+cbox = page.first('span',:text => 'Share your thoughts').native
+=> #<Selenium::WebDriver::Element:0x4136b56c424d5af4 id="{6638be18-12f7-cf42-8a45-d703bc0270b5}">
+
+page.driver.browser.action.move_to(cbox).perform
+
+The text edit div is one with a role='textbox' tag.
+
+=end
