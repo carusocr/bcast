@@ -45,6 +45,9 @@ end
 LINKS
 
 http://stackoverflow.com/questions/6060178/write-to-database-with-tweetstream-daemon
+https://dev.twitter.com/docs/streaming-apis/parameters#locations
+https://dev.twitter.com/docs/streaming-apis/processing
+https://dev.twitter.com/docs/platform-objects
 
 =end
 
