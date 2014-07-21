@@ -1,4 +1,5 @@
 require 'tweetstream'
+require 'yajl'
 
 user = ARGV[0]
 pwd = ARGV[1]
@@ -9,10 +10,10 @@ TweetStream::Client.new(:username => 'you', :password => 'pass')
 Alternatively, you can configure TweetStream via the configure method:
 
 TweetStream.configure do |config|
-  config.consumer_key       = 'cVcIw5zoLFE2a4BdDsmmA'
-  config.consumer_secret    = 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA'
-  config.oauth_token        = '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I'
-  config.oauth_token_secret = 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
+  config.consumer_key       = ''
+  config.consumer_secret    = ''
+  config.oauth_token        = ''
+  config.oauth_token_secret = ''
   config.auth_method        = :oauth
 end
 
@@ -48,7 +49,25 @@ http://stackoverflow.com/questions/6060178/write-to-database-with-tweetstream-da
 =end
 
 #TweetStream::Daemon.new(:username => user, :password = pwd)
-TweetStream::Client.new(:username => user, :password => pwd).sample do |status|
-  puts "[#{status.user.screen_name}] #{status.text}"
+#TweetStream::Client.new(:username => user, :password => pwd).sample do |status|
+#  puts "[#{status.user.screen_name}] #{status.text}"
+#end
+require 'tweetstream'
+
+TweetStream.configure do |config|
+  config.consumer_key       = 'abcdefghijklmnopqrstuvwxyz'
+  config.consumer_secret    = '0123456789'
+  config.oauth_token        = 'abcdefghijklmnopqrstuvwxyz'
+  config.oauth_token_secret = '0123456789'
+  config.auth_method        = :oauth
 end
 
+client = TweetStream::Client.new
+
+client.on_error do |message|
+  puts message
+end
+
+client.track('football') do |status|
+  puts "#{status.text}"
+end
