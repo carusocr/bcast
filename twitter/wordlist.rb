@@ -27,22 +27,22 @@ TweetStream.configure do |config|
   config.auth_method        = cnf['sample']['a_meth']
 end
 
-ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
-searchterm = File.readlines('uzbek.txt').join(',').gsub("\n","")
+#ofil = `date +%Y%m%d_%k%M`.chop + '_uzbek.txt'
+ofil = `date +%Y%m%d_%k%M`.chop + '_RT.txt'
+#searchterm = File.readlines('uzbek.txt').join(',').gsub("\n","")
+searchterm = 'RT,the'
 
-#tweetfile = File.open("#{datadir}/#{ofil}",'a')
+tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
 #looks like sampling by lang doesn't return anything that isn't in sample set...duh
 #TweetStream::Client.new.sample(language: 'tr') do |status|
 #TweetStream::Client.new.sample do |status|
 TweetStream::Client.new.track("#{searchterm}") do |status|
-#  tweet = JSON.generate(status.attrs)
-#  tweetfile.puts tweet
-  puts status.text
-  puts status.lang
+  tweet = JSON.generate(status.attrs)
+  tweetfile.puts tweet
 end
 
-#tweetfile.close
+tweetfile.close
 
 #can also search for keywords or by geo coords
 #TweetStream::Client.new.track('philadelphia,rahmat,arzimaydi,kechirasiz,yomon') do |status|
