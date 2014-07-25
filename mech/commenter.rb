@@ -13,6 +13,10 @@ Concept:
 
 
 Notes: use capybara for now since I've moved to that for stockboy?
+
+https://developers.google.com/youtube/2.0/developers_guide_protocol_comments#Adding_a_comment
+https://developers.google.com/youtube/articles/changes_to_comments#threading
+
 =end
 
 require 'capybara'
@@ -90,5 +94,6 @@ more progress, got this error:
 
 Selenium::WebDriver::Error::ElementNotVisibleError: Element is not currently visible and so may not be interacted with
 from [remote server] file:///var/folders/nD/nDNsuhVXFiyh2wjEgJ0eXk+++TI/-Tmp-/webdriver-profile20140708-54519-10ezhca/extensions/fxdriver@googlecode.com/components/command_processor.js:8225:5:in `fxdriver.preconditions.visible'
+page.execute_script("$('input[name=\"number\"]').focus()")
 
 =end
