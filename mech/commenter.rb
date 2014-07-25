@@ -122,4 +122,12 @@ function post(path, params, method) {
     form.submit();
 }
 
+****USE YOUTUBE_IT
+
+require 'youtube_it'
+
+client = YouTubeIt::Client.new(:username => username, :password => password, :dev_key => DEVKEY)
+client.add_comment(video_id, 'comment')
+
+
 =end
