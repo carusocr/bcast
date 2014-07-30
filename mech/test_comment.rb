@@ -9,6 +9,11 @@ LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
 TESTVID = "https://www.youtube.com/watch?v=mhAU9iBJQTs"
 
 opts = Trollop::options do
+  banner <<-EOS
+ZUG ZUG
+ZUG
+...
+EOS
   opt :comment, "Comment to add to video", :short => 'c', :type => String
 end
 

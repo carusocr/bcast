@@ -28,9 +28,9 @@ ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
 tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
 #looks like sampling by lang doesn't return anything that isn't in sample set...duh
-#TweetStream::Client.new.sample(language: 'tr') do |status|
-#TweetStream::Client.new.sample do |status|
-TweetStream::Client.new.track(language: 'tr') do |status|
+#TweetStream::Client.new.firehose(language='tr') do |status|
+TweetStream::Client.new.sample do |status|
+#TweetStream::Client.new.track(language: 'tr') do |status|
   tweet = JSON.generate(status.attrs)
   tweetfile.puts tweet
 end

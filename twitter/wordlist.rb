@@ -27,10 +27,10 @@ TweetStream.configure do |config|
   config.auth_method        = cnf['sample']['a_meth']
 end
 
-#ofil = `date +%Y%m%d_%k%M`.chop + '_uzbek.txt'
-ofil = `date +%Y%m%d_%k%M`.chop + '_RT.txt'
-#searchterm = File.readlines('uzbek.txt').join(',').gsub("\n","")
-searchterm = 'RT,the'
+ofil = `date +%Y%m%d_%k%M`.chop + '_uzbek.txt'
+#ofil = `date +%Y%m%d_%k%M`.chop + '_RT.txt'
+searchterm = File.readlines('uzbek.txt').join(',').gsub("\n","")
+#searchterm = 'RT,the'
 
 tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
