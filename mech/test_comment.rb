@@ -1,14 +1,18 @@
 #!/usr/bin/env ruby
 
 require 'capybara'
+require 'youtube_it'
+require 'trollop'
 Capybara.current_driver = :selenium
-
-EMAIL = ARGV[0]
-PASSWD = ARGV[1]
-
 
 LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
 TESTVID = "https://www.youtube.com/watch?v=mhAU9iBJQTs"
+
+opts = Trollop::options do
+  opt :comment, "Comment to add to video", :short => 'c', :type => String
+end
+
+puts opts[:comment]
 
 class GoogleLogin
   include Capybara::DSL
@@ -41,7 +45,3 @@ class GoogleLogin
       
     end
 end
-
-t = GoogleLogin.new
-t.login
-t.comment
