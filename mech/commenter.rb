@@ -1,34 +1,33 @@
 #!/usr/bin/env ruby
 
-=begin
-Name: 
-Concept:
-
-1. Agent logs into Google account.
-2. Agent navigates to youtube page, using similar search mechanism as with ytvore.
-	records URL in database. Doesn't bother downloading video.
-3. Enters inflammatory comment based on search criteria. Example, 'parkour is for losers'. 
-4. Occasionally checks to see if replies have been generated. Harvests those comments
-	into a comments table with URL as foreign key.
-
-
-Notes: use capybara for now since I've moved to that for stockboy?
-
-https://developers.google.com/youtube/2.0/developers_guide_protocol_comments#Adding_a_comment
-https://developers.google.com/youtube/articles/changes_to_comments#threading
-
-=end
-
 require 'capybara'
+require 'youtube_it'
+require 'trollop'
+require 'yaml'
 Capybara.current_driver = :selenium
 
-EMAIL = ARGV[0]
-PASSWD = ARGV[1]
 LOGIN_URL = "https://accounts.google.com/ServiceLogin?hl=en"
 TESTVID = "https://www.youtube.com/watch?v=mhAU9iBJQTs"
+cfgfile = 'dev.cfg'
+cnf = YAML::load(File.open(cfgfile))
+devkey = cnf['goog']['devkey']
 
+opts = Trollop::options do
+  banner <<-EOS
 
+Add comment to a YouTube video.
 
+Usage: commenter.rb -u <username> -p <password> -v <video id> -c <comment to add>
+
+EOS
+  opt :vid_id, "Youtube ID string of video", :short => 'v', :type => String
+  opt :comment, "Comment to add to video", :short => 'c', :type => String
+  opt :user, "Google login", :short => 'u', :type => String
+  opt :pwd, "Google pass", :short => 'p', :type => String
+end
+
+client = YouTubeIt::Client.new(:username => opts[:user], :password => opts[:pwd], :dev_key => devkey)
+client.add_comment(opts[:vid_id],opts[:comment])
 
 class GoogleLogin
   include Capybara::DSL
@@ -46,88 +45,20 @@ class GoogleLogin
       # figure out how to list scripts
       # check out this page: http://help.dottoro.com/ljhrmrfb.php#dhtmlMethods
       comments = page.first(:xpath,"//iframe")[:id]
+      page.driver.browser.switch_to.frame comments
+      page.first('span',:text => 'Share your thoughts').hover
+      page.first('span',:text => 'Share your thoughts').click
+      #page.first(:xpath,"//div[contains(@id,':')]").set 'ZUG'
+      #sleep 2
+      cnode = page.first(:xpath,"//div[contains(@id,':')]",:visible=>false)
+      puts "Got a cnode" if !cnode.nil? 
+      sleep 2
+      #cnode2 = page.first(:xpath,"//div[contains(@id,':')]")
+      #puts "Got a second cnode" if !cnode2.nil? 
+      page.first(:xpath,"//div[@contenteditable='true']").set 'YOUR CAT IS AWESOME'
+      
+      
     end
 end
 
-t = GoogleLogin.new
-t.login
-t.comment
-sleep 1
-# need to scroll down a page so comments iframe loads
-# to scroll down a page: 
-#switch to iframe with comments!
-#comments = page.first(:xpath,"//iframe")[:id]
-# page.driver.browser.switch_to.frame comments
-# find comment box
-# page.first('span', :text => 'Share your thoughts').click
-# NEED TO LOG IN FIRST, OTHERWISE REDIRECTS TO LOGIN
 
-#set value of text in element?
-# /html/body/div/div/div/div/div[2]/div[2]/div/div/div[5]/div/div/div
-# //*[@id=":u.f"]
-# 
-#eureka?
-# type 'zugzug' in comments box
-# page.first(:xpath,"//div[@id=':u.f']").text
-# returns 'zugzug'
-# page.first(:xpath,"//div[@id=':u.f']").set "test"
-# comments text changes to 'test'
-=begin
-
-notes on wrangling with comment box
-
-- can click on box, but no blinking text cursor shows up. 
-- if I manually type some text and then delete it, I can then run:
-  page.first(:xpath,"//div[@contenteditable='true']").set 'zug'
-and successfully change text in field. Can't enter text after first click though.
-
-cbox = page.first('span',:text => 'Share your thoughts').native
-=> #<Selenium::WebDriver::Element:0x4136b56c424d5af4 id="{6638be18-12f7-cf42-8a45-d703bc0270b5}">
-
-page.driver.browser.action.move_to(cbox).perform
-
-The text edit div is one with a role='textbox' tag.
-
-page.first(:xpath,"//div[contains(@id,':')]",:visible=>false)[:class]
-
-more progress, got this error:
-
-Selenium::WebDriver::Error::ElementNotVisibleError: Element is not currently visible and so may not be interacted with
-from [remote server] file:///var/folders/nD/nDNsuhVXFiyh2wjEgJ0eXk+++TI/-Tmp-/webdriver-profile20140708-54519-10ezhca/extensions/fxdriver@googlecode.com/components/command_processor.js:8225:5:in `fxdriver.preconditions.visible'
-page.execute_script("$('input[name=\"number\"]').focus()")
-
-Method to simulate post?
-
-function post(path, params, method) {
-    method = method || "post"; // Set method to post by default if not specified.
-
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", path);
-
-    for(var key in params) {
-        if(params.hasOwnProperty(key)) {
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", key);
-            hiddenField.setAttribute("value", params[key]);
-
-            form.appendChild(hiddenField);
-         }
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-}
-
-****USE YOUTUBE_IT
-
-require 'youtube_it'
-
-client = YouTubeIt::Client.new(:username => username, :password => password, :dev_key => DEVKEY)
-client.add_comment(video_id, 'comment')
-
-
-=end
