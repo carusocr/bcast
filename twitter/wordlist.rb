@@ -30,20 +30,13 @@ TweetStream.configure do |config|
 end
 
 searchterm = File.readlines("#{wordlist}").join(',').gsub("\n","")
-#searchterm = 'RT'
+#add option for command line searchterming?
 
 tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
-#looks like sampling by lang doesn't return anything that isn't in sample set...duh
-#TweetStream::Client.new.sample(language: 'tr') do |status|
-#TweetStream::Client.new.sample do |status|
 TweetStream::Client.new.track("#{searchterm}") do |status|
   tweet = JSON.generate(status.attrs)
   tweetfile.puts tweet
 end
 
 tweetfile.close
-
-#can also search for keywords or by geo coords
-#TweetStream::Client.new.track('philadelphia,rahmat,arzimaydi,kechirasiz,yomon') do |status|
-#TweetStream::Client.new.locations('39.953510,-75.198669,39.956923,-75.193980') do |status|
