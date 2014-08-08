@@ -27,7 +27,11 @@ require 'tweetstream'
 require 'json'
 cfgfile = 'auth.cfg'
 datadir = '.'
-loc = '-75.142932,39.953748,-75.178552,39.951050' #2nd and Race
+#loc1 = '-74,40'
+#loc2 = '-73,41'
+#loc = '3.098810,6.413815,3.448999,6.758964'
+loc1 = '3.098810,6.413815'
+loc2 = '3.448999,6.758964'
 
 cnf = YAML::load(File.open(cfgfile))
 
@@ -43,11 +47,13 @@ ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
 
 #tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
-TweetStream::Client.new.locations(loc) do |status|
-#TweetStream::Client.new.locations('69.109454,41,209070,69.503589,41.377771') do |status|
-  puts status.text
-  puts status.place.full_name
-  puts status.attrs
+#TweetStream::Client.new.locations("#{loc}") do |status|
+TweetStream::Client.new.locations(loc1,loc2) do |status|
+#  puts status.place.full_name
+  if status.text =~ /ebola/ || status.text =~ /die/ || status.text =~ /dyin/
+    puts status.user.screen_name
+    puts status.text
+  end
 #  tweet = JSON.generate(status.attrs)
 #  tweetfile.puts tweet
 end
