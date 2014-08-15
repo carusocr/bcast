@@ -43,18 +43,20 @@ TweetStream.configure do |config|
 end
 
 ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
+keywords = 'ebola, die, dying'
+countries = ['Guinea','Liberia','Nigeria','Sierra Leone']
 
 #tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
-TweetStream::Client.new.locations(loc1,loc2) do |status|
-  if status.text =~ /ebola/ || status.text =~ /die/ || status.text =~ /dyin/
+TweetStream::Client.new.track(keywords) do |status|
+  if countries.include?(status.place.name)
     puts status.user.screen_name
     puts status.text
-    puts status.place.name
-  end
+    puts status.place.name + "\n"
 # uncomment to write to file instead of idly watching it
 #  tweet = JSON.generate(status.attrs)
 #  tweetfile.puts tweet
+  end
 end
 
 #tweetfile.close
