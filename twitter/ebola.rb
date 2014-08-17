@@ -28,6 +28,7 @@ cfgfile = 'auth.cfg'
 datadir = '.'
 loc1 = '3.098810,6.413815'
 loc2 = '3.448999,6.758964'
+points = []
 
 cnf = YAML::load(File.open(cfgfile))
 
@@ -44,17 +45,21 @@ keywords = 'ebola, die, dying'
 countries = ['Guinea','Liberia','Nigeria','Sierra Leone']
 
 #tweetfile = File.open("#{datadir}/#{ofil}",'a')
+pointfile = File.open('tweebolas','a')
 
 TweetStream::Client.new.track(keywords) do |status|
   if countries.include?(status.place.name)
-    #puts status.user.screen_name
+    puts status.user.screen_name
     puts status.text
-    puts status.coordinates.type
-    puts status.geo.type
-    #puts status.place.name + "\n"
+    puts status.place.name + "\n"
 # uncomment to write to file instead of idly watching it
-#  tweet = JSON.generate(status.attrs)
-#  tweetfile.puts tweet
+    tweet = JSON.generate(status.attrs)
+    contents = JSON.parse(tweet)
+    pt1 = contents['coordinates']['coordinates'][1]
+    pt2 = contents['coordinates']['coordinates'][0]
+    puts contents['coordinates']['coordinates']
+    coord = "\tnew google.maps.LatLng(#{pt1},#{pt2}),"
+    pointfile.puts coord
   end
 end
 

@@ -25,13 +25,25 @@
 // Adding 500 Data Points
 var map, pointarray, heatmap;
 
+var txtFile = new XMLHttpRequest();
+txtFile.open("GET","file:///Users/carusocr/projects/bcast/twitter/tweebolas", true);
+//txtFile.onreadystatechange = function() {
+allText = txtFile.responseText
+//allTextLines = allText.split(/\n)
+//}
+// working with JSON
+//var myList;
+//$.getJSON('JsonData.json')
+//.done(function (data) {
+//myList = data;
+//});
+
+
 var ebolaTweet = [
   new google.maps.LatLng(6.48399,3.30268),
   new google.maps.LatLng(6.488619,3.359756),
   new google.maps.LatLng(7.019816,4.764243),
-  new google.maps.LatLng(10.58151,7.45855),
-  new google.maps.LatLng(6.552027,3.391395),
-  new google.maps.LatLng(6.538046,3.21597)
+  new google.maps.LatLng(10.58151,7.45855)
 ];
 
 function initialize() {
