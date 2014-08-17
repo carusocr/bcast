@@ -26,9 +26,6 @@ require 'tweetstream'
 require 'json'
 cfgfile = 'auth.cfg'
 datadir = '.'
-#loc1 = '-74,40'
-#loc2 = '-73,41'
-#loc = '3.098810,6.413815,3.448999,6.758964'
 loc1 = '3.098810,6.413815'
 loc2 = '3.448999,6.758964'
 
@@ -50,9 +47,11 @@ countries = ['Guinea','Liberia','Nigeria','Sierra Leone']
 
 TweetStream::Client.new.track(keywords) do |status|
   if countries.include?(status.place.name)
-    puts status.user.screen_name
+    #puts status.user.screen_name
     puts status.text
-    puts status.place.name + "\n"
+    puts status.coordinates.type
+    puts status.geo.type
+    #puts status.place.name + "\n"
 # uncomment to write to file instead of idly watching it
 #  tweet = JSON.generate(status.attrs)
 #  tweetfile.puts tweet
