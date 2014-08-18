@@ -45,10 +45,10 @@ keywords = 'ebola, die, dying'
 countries = ['Guinea','Liberia','Nigeria','Sierra Leone']
 
 #tweetfile = File.open("#{datadir}/#{ofil}",'a')
-pointfile = File.open('tweebolas','a')
 
 TweetStream::Client.new.track(keywords) do |status|
   if countries.include?(status.place.name)
+    pointfile = File.open('tweebolas','a')
     puts status.user.screen_name
     puts status.text
     puts status.place.name + "\n"
@@ -60,6 +60,7 @@ TweetStream::Client.new.track(keywords) do |status|
     puts contents['coordinates']['coordinates']
     coord = "\tnew google.maps.LatLng(#{pt1},#{pt2}),"
     pointfile.puts coord
+    pointfile.close
   end
 end
 
