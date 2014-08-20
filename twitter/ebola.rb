@@ -42,7 +42,7 @@ end
 
 ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
 keywords = 'ebola, die, dying'
-countries = ['Guinea','Liberia','Nigeria','Sierra Leone']
+countries = ['Guinea','Liberia','Nigeria','Sierra Leone','Ghana','Togo','Benin','Cameroon','Burkina Faso','Ivory Coast']
 
 #tweetfile = File.open("#{datadir}/#{ofil}",'a')
 
