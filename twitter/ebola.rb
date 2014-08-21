@@ -19,6 +19,14 @@ touches Russia, it will grab all tweets with 'Russia' listed as place as well as
 
 Also, if tweets originate from outside the box but inside of Ukraine and have no coordinate data, those
 would logically be caught by the client, too. Need to test this more.
+
+RESOURCES:
+
+Resizable rectangles with lat/long...use for location search?
+https://developers.google.com/maps/documentation/javascript/examples/rectangle-event
+
+Simple markers - use these with each tweet, title calls text of tweet? Maybe hash of coords => text?
+https://developers.google.com/maps/documentation/javascript/examples/marker-simple
 =end
 
 require 'yaml'
