@@ -36,7 +36,10 @@ function loadPoints() {
   var file = fileInput.files[0];
   var reader = new FileReader();
   reader.onload = function(e) {
-    alert(reader.result);
+    //alert(reader.result);
+    var pointlist = reader.result;
+    var pointArray = new google.maps.MVCArray(pointlist);
+    return pointArray;
   }
   reader.readAsText(file);
 }
@@ -60,7 +63,7 @@ function initialize() {
     mapOptions);
 
 //  var pointArray = new google.maps.MVCArray(ebolaTweet);
-  var pointArray = new google.maps.MVCArray(allTextLines);
+//  var pointArray = new google.maps.MVCArray(pointlist);
 
   heatmap = new google.maps.visualization.HeatmapLayer({
     data: pointArray
@@ -83,8 +86,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
   <body>
     <div id="map-canvas"></div>
     <div id="panel">
-    <button onclick="loadPoints()">Load Pointfile</button>
     <input type="file" id="fileInput" name="Load Points">
+    <button onclick="loadPoints()">Load Pointfile</button>
+    <button onclick="initialize()">Reload Map</button>
     </div>
   </body>
 </div>
