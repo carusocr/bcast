@@ -66,7 +66,7 @@ TweetStream::Client.new.track(keywords) do |status|
     pt1 = contents['coordinates']['coordinates'][1]
     pt2 = contents['coordinates']['coordinates'][0]
     puts contents['coordinates']['coordinates']
-    coord = "\tnew google.maps.LatLng(#{pt1},#{pt2}),"
+    coord = "#{pt1},#{pt2}"
     pointfile.puts coord
     pointfile.close
   end
