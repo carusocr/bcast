@@ -34,9 +34,11 @@ require 'tweetstream'
 require 'json'
 cfgfile = 'auth.cfg'
 datadir = '.'
-loc1 = '3.098810,6.413815'
-loc2 = '3.448999,6.758964'
+loc1 = '-75.245835,39.951261'
+loc2 = '-75.167214,39.964946'
 points = []
+abort "Enter place name" unless ARGV[0]
+places = ARGV[0]
 
 cnf = YAML::load(File.open(cfgfile))
 
@@ -48,16 +50,14 @@ TweetStream.configure do |config|
   config.auth_method        = cnf['ebola']['a_meth']
 end
 
-ofil = `date +%Y%m%d_%k%M`.chop + '.txt'
-keywords = 'ebola, die, dying'
-countries = ['Guinea','Liberia','Nigeria','Sierra Leone','Ghana','Togo','Benin','Cameroon','Burkina Faso','Ivory Coast']
+ofil = `date +%Y%m%d_%k%M`.chop + "_" + places + '.txt'
 
-TweetStream::Client.new.track(keywords) do |status|
-  if countries.include?(status.place.name)
-    pointfile = File.open('tweebolas','a')
-    #puts status.user.screen_name
-    #puts status.text
-    #puts status.place.name + "\n"
+TweetStream::Client.new.locations("#{loc1}","#{loc2}") do |status|
+  if places.include?(status.place.name)
+    pointfile = File.open(ofil,'a')
+    puts status.user.screen_name
+    puts status.text
+    puts status.place.name + "\n"
     tweet = JSON.generate(status.attrs)
     contents = JSON.parse(tweet)
     pt1 = contents['coordinates']['coordinates'][1]
