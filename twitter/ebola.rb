@@ -57,28 +57,20 @@ countries = ['Guinea','Liberia','Nigeria','Sierra Leone','Ghana','Togo','Benin',
 TweetStream::Client.new.track(keywords) do |status|
   if countries.include?(status.place.name)
     pointfile = File.open('tweebolas','a')
-    puts status.user.screen_name
-    puts status.text
-    puts status.place.name + "\n"
-# uncomment to write to file instead of idly watching it
+    #puts status.user.screen_name
+    #puts status.text
+    #puts status.place.name + "\n"
     tweet = JSON.generate(status.attrs)
     contents = JSON.parse(tweet)
     pt1 = contents['coordinates']['coordinates'][1]
     pt2 = contents['coordinates']['coordinates'][0]
-    puts contents['coordinates']['coordinates']
-    coord = "#{pt1},#{pt2}"
-    pointfile.puts coord
+    user = contents['user']['screen_name']
+    tweet = contents['text'].gsub("\t","").gsub("\n","")
+    tweetstring = "#{pt1}\t#{pt2}\t#{user}\t#{tweet}\n"
+    puts tweetstring
+    pointfile.write tweetstring
     pointfile.close
   end
 end
 
 #tweetfile.close
-
-# 23rd and Walnut, 2nd and Race
-#loc1 = '39.951050, -75.178552'
-#loc2 = '39.953748, -75.142932'
-# Tashkent Uzbekistan
-#loc1 = '41.182720, 69.114261'
-#loc2 = '41.41857, 69.421191'
-# 41.209070, 69.109454
-# 41.377771, 69.503589
