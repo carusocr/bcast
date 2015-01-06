@@ -1,46 +1,19 @@
-bcast
+bcastcol
 ========
 
 Broadcast Collection Support Software Repository
 
+Suite of scripts used to collect broadcast and web audio/video data.
 
-###mech
-======
-Home to automation experiments.
+streaming/streamcap.rb
 
-####ytvore.rb:
-Connects to MySQL database to assemble list of search terms, uses capybara to headlessly navigate to YouTube and searches for videos, enters list of results as basic annotations into database, downloads videos, converts to standardized format if necessary.
+Script to read in list of streaming radio sources from xml file, and use mplayer/rtmpdump/ffmpeg to download approximately 30 minutes of each source to a uniquely-named output file. Runs once per language.
 
-####poltertube.rb:
-Scrapes YouTube and Vimeo for videos matching searchterms. 
+streaming/twitter/wordlist.rb
 
-####demo_poltertube.rb:
-Demo of YouTube page scraping using capybara+selenium.
+Script that reads in a list of common words for a specified language, creates a streaming Twitter client, and monitors stream to collect any tweets with matching words.
 
-####phocomp.rb:
-Testing out image scraping...started with Yahoo image search.
+streaming/twitter/grab_tweets.rb
 
-####mechanized_commenter.rb:
-Final version of this script will log into Google Accounts, navigate to a YouTube video based on search term (i.e. 'jiu-jitsu'), make a comment based on search term (i.e. 'your jiu-jitsu is terrible'), notate in database when and where comment was made, wait a period of time, then return to page later and scrape replies to comment. 
+Script that collects all tweets matching either user IDs or tweet IDs from input file.
 
-###streaming
-======
-Scripts to capture streaming online radio.
-
-####streamcap.rb:
-Reads in list of streaming radio sources from xml file, uses mplayer/rtmpdump/ffmpeg to download approximately 30 minutes of each source flagged for download to a timestamped output file. 
-
-###scola_scrape
-======
-
-####scola_scrape.rb:
-
-Web scraper for SCOLA.org broadcast schedule. Currently runs with 'ruby scola_scrape.rb' and writes to test database db/test.db which can be cleared with db/schema.rb (which contains the table definition) Could be set up to run with MySQL by modifying config.yaml and then run as a cron job (see config tips below)
-
-###ytdl
-======
-Contains youtube downloader scripts.
-
-####youtube-dl:
-http://rg3.github.io/youtube-dl/
-option to download all user uploads: youtube-dl -citw ytuser:[USERNAME]

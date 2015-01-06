@@ -62,3 +62,9 @@ class GoogleLogin
 end
 
 
+driver = new FirefoxDriver()
+driver.get("http://localhost/"
+driver.executeScript("return alert(1);")
+alert = driver.switchTo().alert()
+println(alert.getText())
+alert.accept()

@@ -1,7 +1,8 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-	gem "rails"
-	gem "nokogiri"
-	gem "mysql"
-	gem "json"	
+# gem "rails"
+gem "tweetstream"
+gem "twitter"
+gem "trollop"
+gem "nokogiri"
