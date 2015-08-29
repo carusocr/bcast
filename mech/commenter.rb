@@ -1,4 +1,18 @@
 #!/usr/bin/env ruby
+=begin
+Script to log in to Google account, navigate to a YouTube video, and make a comment.
+
+Future features:
+
+1. Automated search for video based on keywords. 
+2. Leave comment with content that varies depending on video title/subject.
+3. Maintain database record of urls+comments, revisit and harvest replies.
+
+*** Using youtube_it no longer works since YouTube changed their API and the
+gem has been apparently abandoned. Seek alternatives.
+
+=end
+ 
 
 require 'capybara'
 require 'youtube_it'
@@ -60,11 +74,3 @@ class GoogleLogin
       
     end
 end
-
-
-driver = new FirefoxDriver()
-driver.get("http://localhost/"
-driver.executeScript("return alert(1);")
-alert = driver.switchTo().alert()
-println(alert.getText())
-alert.accept()
