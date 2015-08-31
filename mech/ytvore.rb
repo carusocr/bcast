@@ -31,59 +31,6 @@ thumbnail description also has them using their own name in the clip itself.
 	video description
 	video length
 
-New tables for ascout:
-
-| ascout_prescout | CREATE TABLE `ascout_prescout` (
-  `id` int(11) NOT NULL DEFAULT '0',
-  `url` char(11) NOT NULL,
-  `uploader` varchar(20) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL,
-  `searchterm` int(11) DEFAULT NULL,
-  `created` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `url` (`url`),
-  KEY `ascout_searchterm_ibfk_2` (`searchterm`),
-	CONSTRAINT `ascout_prescout_ibfk1` FOREIGN KEY (`searchterm`) REFERENCES `ascout_searchterm` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
-
-+------------+-------------+------+-----+---------+-------+
-| Field      | Type        | Null | Key | Default | Extra |
-+------------+-------------+------+-----+---------+-------+
-| id         | int(11)     | NO   | PRI | 0       |       |
-| url        | char(11)    | NO   | UNI | NULL    |       |
-| uploader   | varchar(20) | YES  |     | NULL    |       |
-| title      | varchar(255)| YES  |     | NULL    |       |
-| duration   | int(11)     | YES  |     | NULL    |       |
-| searchterm | int(11)     | YES  | MUL | NULL    |       |
-| created    | datetime    | YES  |     | NULL    |       |
-+------------+-------------+------+-----+---------+-------+
-
-| ascout_searchterm | CREATE TABLE `ascout_searchterm` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `event` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `created` datetime DEFAULT NULL,
-  `last_checked` datetime DEFAULT NULL,
-	`active` boolean default 0,
-	`aud_only` boolean default 0,
-  PRIMARY KEY (`id`),
-  KEY `event` (`event`),
-	CONSTRAINT `ascout_searchterm_ibfk1` FOREIGN KEY (`event`) REFERENCES `ascout_event` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 |
-
-+---------+--------------+------+-----+---------+----------------+
-| Field   | Type         | Null | Key | Default | Extra          |
-+---------+--------------+------+-----+---------+----------------+
-| id      | int(11)      | NO   | PRI | NULL    | auto_increment |
-| event   | int(11)      | NO   | MUL | NULL    |                |
-| name    | varchar(255) | NO   |     | NULL    |                |
-| created | datetime     | YES  |     | NULL    |                |
-| updated | datetime     | YES  |     | NULL    |                |
-| active  | tinyint(1)   | YES  |     | 0       |                |
-| aud_only| tinyint(1)   | YES  |     | 0       |                |
-+---------+--------------+------+-----+---------+----------------+
-
 Method flow:
 
 1. Assemble list of search terms.
@@ -134,10 +81,13 @@ if $date_filter
 else	
 	$search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 end
-abort "Enter database password!" unless $dbpass
+abort "Enter database password!" unless $dbpass || $no_db_update 
 
 $datadir = "~/projects/bcast/mech"
-$m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
+if !$no_db_update
+  puts 'databasing'
+  $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
+end
 #$download_urls = Hash.new
 $download_urls = Hash.new{|h,k| h[k] = Hash.new}
 $agent = Mechanize.new
