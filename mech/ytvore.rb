@@ -45,16 +45,11 @@ Method flow:
 
 TO-DO LIST:
 
-- FIX TITLE HANDLING
-	* done, changed all non-alpha chars to underscores. Ugly but functional...
-	* get users handle instead of longer name, too?
-- ADD PRESCOUT URL TO DOWNLOADER FOR CLIP NAMING
-- ADD HANDLING FOR SEARCH AFTER LAST DATE CHECKED
-this works via &filters=(today|week|month)
-syntax is &filters=today,+nextfilter,+nextfilter. Comma is %2C
-- Add some sort of freeball mode that doesn't depend on database connectivity at all, just searches and downloads - how to avoid uniques, check download directory?
-=end
+1. Make it work with new YouTube pages.
+2. Figure out how to get best info from thumbnail and main divs.
+3. clean up methods...don't need so many
 
+=end
 
 require 'mysql'
 require 'open-uri'
@@ -118,14 +113,18 @@ def grab_page_links(ytpage)
 		puts "Page is #{i}"
 		page = $agent.get(ytpage)
 
-		page.parser.xpath('//div[contains(@class, "yt-lockup-content")]').each do |vid|
+    # this grbs info from thumbnail...duration plus...?
+    # should navigate to next item 
+		page.parser.xpath('//div[contains(@class, "yt-lockup-thumbnail")]').each do |vid|
+      # this grabs info from main link
+		  # page.parser.xpath('//div[contains(@class, "yt-lockup-content")]').each do |vid|
       
     # 'at' seems pretty handy
-      vid_url = vid.at('a').attr('href')
-      puts vid_url
+        #vid_url = vid.at('a').attr('href')
+        #puts vid_url
 			#unless (url =~ /^PL/) #if not part of playlist
 		#		page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
-		#	end
+		end
 
 		end
 
