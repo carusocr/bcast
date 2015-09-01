@@ -118,30 +118,22 @@ def grab_page_links(ytpage)
 		puts "Page is #{i}"
 		page = $agent.get(ytpage)
 
-		page.parser.xpath('//li[contains(@class, "context-data-item")]').each do |vid|
-
-			title =  vid.attr('data-context-item-title')
-			uploader = vid.attr('data-context-item-user')
-			#get uploader name from youtube-dl? Succinct but slower.
-			duration = vid.attr('data-context-item-time')
-			url = vid.attr('data-context-item-id')
-			puts "#{url}\t#{title}\t#{uploader}\t#{duration}\tZug."
-			unless (url =~ /^PL/) #if not part of playlist
-				page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
-			end
+		page.parser.xpath('//div[contains(@class, "yt-lockup-content")]').each do |vid|
+      
+    # 'at' seems pretty handy
+      vid_url = vid.at('a').attr('href')
+      puts vid_url
+			#unless (url =~ /^PL/) #if not part of playlist
+		#		page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+		#	end
 
 		end
 
     #this xpath no longer works...playing with new source
 
 
-		page.parser.xpath('//a[contains(@class, "yt-uix-sessionlink")]').each do |vid|
-
-      puts vid.attr('href')
-
-    end
 	end
-	return page_hits
+	#return page_hits
 
 end
 
@@ -214,6 +206,8 @@ end
 def scrape_youtube(ytpage,searchterm)
 
 	page_hits = grab_page_links(ytpage)
+  # jameed in for testing
+  exit
 	page_hits.each do |hit|
 
 		url,title,uploader,duration = hit.split("\t")
@@ -242,4 +236,4 @@ def download_clips()
 end
 
 build_searchlist()
-download_clips()
+#download_clips()
