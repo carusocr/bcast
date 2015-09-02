@@ -83,14 +83,8 @@ if !$no_db_update
   puts 'databasing'
   $m = Mysql.new "localhost", "root", "#{$dbpass}", "ascout"
 end
-#$download_urls = Hash.new
 $download_urls = Hash.new{|h,k| h[k] = Hash.new}
 $agent = Mechanize.new
-
-
-# Add 
-#https://www.googleapis.com/youtube/v3/search?part=snippet&publishedAfter=2011-01-01T00%3A00%3A00Z&q=coke&type=video&videoDefinition=high&videoDuration=short&key={YOUR_API_KEY}
-#
 
 def grab_page_links(ytpage)
 
@@ -110,29 +104,26 @@ def grab_page_links(ytpage)
 	for i in 1..$pagecount
 
 		ytpage.sub!(/page=\d+/,"page=#{i}")
-		puts "Page is #{i}"
 		page = $agent.get(ytpage)
 
-    # this grbs info from thumbnail...duration plus...?
-    # should navigate to next item 
-		page.parser.xpath('//div[contains(@class, "yt-lockup-thumbnail")]').each do |vid|
-      # this grabs info from main link
-		  # page.parser.xpath('//div[contains(@class, "yt-lockup-content")]').each do |vid|
-      
-    # 'at' seems pretty handy
-        #vid_url = vid.at('a').attr('href')
-        #puts vid_url
-			#unless (url =~ /^PL/) #if not part of playlist
-		#		page_hits.push("#{url}\t#{title}\t#{uploader}\t#{duration}")
+		page.parser.xpath('//div[contains(@class, "yt-lockup-content")]').each do |vid|
+      vid_url = vid.at('a').attr('href').sub("/watch?v=","")
+      duration = vid.at('span').children.text.sub(" - Duration: ","").sub(".","")
+      puts vid_url
+			page_hits.push("#{vid_url}\t#{vid_url}") # using unique vid string as filename for now
 		end
 
-		end
+  end
 
-    #this xpath no longer works...playing with new source
-
+	page_hits.each do |hit|
+		url,title = hit.split("\t")
+		#change single quotes to escaped quotes for sql statement, strip trailing _
+		#title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
+		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring
+    #populate hash of hashes
+    $download_urls["#{url}"]['title'] = title
 
 	end
-	#return page_hits
 
 end
 
@@ -186,8 +177,7 @@ def build_searchlist()
 		puts "Search string is #{$searchstring}!"
 		ytpage = $search_prefix + $searchstring
     searchterm = 'NULL'
-		scrape_youtube(ytpage,searchterm)
-    puts ytpage
+		grab_page_links(ytpage)
 		return 0
 	end
 	ytq = $m.query("select id,name from ascout_searchterm where active = 1")
@@ -195,29 +185,10 @@ def build_searchlist()
 		
 		ytpage = $search_prefix + "#{r['name']}"
 		searchterm = r['id']
-		scrape_youtube(ytpage,searchterm)
-		#sleep 3	
+		grab_page_links(ytpage)
 
 	end
 	
-end
-
-def scrape_youtube(ytpage,searchterm)
-
-	page_hits = grab_page_links(ytpage)
-  # jameed in for testing
-  exit
-	page_hits.each do |hit|
-
-		url,title,uploader,duration = hit.split("\t")
-		#change single quotes to escaped quotes for sql statement, strip trailing _
-		title = title.gsub(/\W/,"_").gsub(/_+/,"_").sub(/_$/,"")
-		update_prescout(url,uploader,duration,searchterm,title) if !$searchstring
-    #populate hash of hashes
-    $download_urls["#{url}"]['title'] = title
-
-	end
-
 end
 
 def download_clips()
@@ -235,4 +206,4 @@ def download_clips()
 end
 
 build_searchlist()
-#download_clips()
+download_clips()
