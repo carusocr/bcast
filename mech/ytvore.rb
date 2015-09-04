@@ -45,9 +45,7 @@ Method flow:
 
 TO-DO LIST:
 
-1. Make it work with new YouTube pages.
-2. Figure out how to get best info from thumbnail and main divs.
-3. clean up methods...don't need so many
+* multiple search words
 
 =end
 
@@ -60,7 +58,8 @@ require 'optparse'
 OptionParser.new do |o|
 	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
-  o.on('-d {today|week|month}','Only get videos uploaded during the past day/week/month') {|b| $date_filter= '&filters=' + b}
+  o.on('-d {hour|today|week|month}','Only get videos uploaded during the past hour/day/week/month') {|b| $date_filter = b}
+  o.on('-t {short|long}','Only get videos of either < 4 or > 20 minutes') {|b| $duration_filter = b}
 	o.on('-h','--help','Print this help text') {puts o; exit}
 	o.on('--no-db','Don\'t update database with found clips') {|b| $no_db_update = true} 
 	o.on('--no-dl','Don\'t download found clips') {|b| $no_download = true} 
@@ -70,12 +69,17 @@ OptionParser.new do |o|
 end
 
 #nfpr = don't replace searchterm
-#filters for date queries
-if $date_filter
-	$search_prefix = "http://www.youtube.com/results?nfpr=1#{$date_filter}&search_query="
-else	
+#filter string constructor...do this less hamfistedly.
+if $date_filter && $duration_filter
+	$search_prefix = "http://www.youtube.com/results?nfpr=1&filters=#{$date_filter},#{$duration_filter}&search_query="
+elsif $date_filter && !$duration_filter
+	$search_prefix = "http://www.youtube.com/results?nfpr=1&filters=#{$date_filter}&search_query="
+elsif !$date_filter && $duration_filter
+	$search_prefix = "http://www.youtube.com/results?nfpr=1&filters=#{$duration_filter}&search_query="
+else
 	$search_prefix = "http://www.youtube.com/results?nfpr=1&search_query="
 end
+
 abort "Enter database password!" unless $dbpass || $no_db_update 
 
 $datadir = "~/projects/bcast/mech"
@@ -176,6 +180,7 @@ def build_searchlist()
 	if $searchstring
 		puts "Search string is #{$searchstring}!"
 		ytpage = $search_prefix + $searchstring
+    puts ytpage
     searchterm = 'NULL'
 		grab_page_links(ytpage)
 		return 0
