@@ -56,7 +56,7 @@ require 'nokogiri'
 require 'optparse'
 
 OptionParser.new do |o|
-	o.on('-s SEARCHTERM','Text search term; concatenate multiple with "+"') {|b| $searchstring = b}
+	o.on('-s SEARCHTERM','Text search term; concatenate multiple in quotes with spaces') {|b| $searchstring = b}
 	o.on('-p DBPASS','Password to MySQL scouting db') {|b| $dbpass = b}
   o.on('-d {hour|today|week|month}','Only get videos uploaded during the past hour/day/week/month') {|b| $date_filter = b}
   o.on('-t {short|long}','Only get videos of either < 4 or > 20 minutes') {|b| $duration_filter = b}
@@ -178,8 +178,9 @@ end
 def build_searchlist()
 
 	if $searchstring
-		puts "Search string is #{$searchstring}!"
-		ytpage = $search_prefix + $searchstring
+    searchterm = $searchstring.gsub(" ","+")
+		puts "Search string is #{searchterm}!"
+		ytpage = $search_prefix + searchterm
     puts ytpage
     searchterm = 'NULL'
 		grab_page_links(ytpage)
