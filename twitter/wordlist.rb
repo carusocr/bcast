@@ -1,10 +1,9 @@
-#!/usr/bin/env/ruby
+#!/usr/bin/env ruby
 
-# sample.rb
-# Date Created: 18 July 2014
+# wordlist.rb
+# Date Created: 22 Nov 2014
 # script creates a Twitter client, assembles array of most common words,
 # tracks tweets matching words
-# NOT unique IDs, need to postprocess
 
 # list of elements returned in status
 # https://dev.twitter.com/docs/platform-objects/tweets
@@ -12,14 +11,57 @@
 require 'yaml'
 require 'tweetstream'
 require 'json'
-cfgfile = 'auth.cfg'
-abort "Enter collection type!" unless ARGV[0]
-collection = ARGV[0]
-wordlist = collection + ".txt"
+require 'trollop'
+
+opts = Trollop::options do
+
+  banner <<-EOS
+
+Collect from Twitter's streaming API using a file of keywords as search terms. 
+Script expects one word per line andrequires an auth.yml file containing app name and corresponding authentication data output information.
+
+auth.yml format:
+
+test:
+  con_key:    'CONSUMER_KEY'
+  con_sec:    'CONSUMER_SECRET'
+  o_tok:      'OAUTH_TOKEN'
+  o_tok_sec:  'OAUTH_TOKEN_SECRET'
+  a_meth:     :oauth
+  datadir:    <collection directory> 
+
+SCRIPT USAGE:
+
+wordlist.rb -a <appname> -i <word list> -l <language code>
+
+EOS
+
+  opt :app, "Name of Twitter app to use for collection", :short => 'a', :required => true, :type => String
+  opt :infile, "File containing input word list", :short => 'i', :required => true,:type => String
+  opt :lang, "ISO 639-1 code of tweet language to be collected", :short => 'l', :required => true,:type => String
+  opt :checklang, "Only collect tweet if it contains a lang value that matches expected lang", :short => 'c', :default => false
+  opt :nowrite, "Do not write tweets to output file", :short => 'n', :default => false
+  opt :idfile, "Write tweet IDs to separate output file", :default => true
+  opt :silent, "Do not print tweets as they are collected", :short => 's', :default => false
+  opt :maxtweets, "Maximum number of tweets to collect", :short => 'm', :type => Integer
+
+end
+
+cfgfile = 'auth.yml'
+collection = opts[:app]
+wordlist = opts[:infile]
+lang = opts[:lang]
+checklang = opts[:checklang]
+nowrite = opts[:nowrite]
+idfile = opts[:idfile]
+silent = opts[:silent]
+maxtweets = opts[:maxtweets] ? opts[:maxtweets] : 10000000 #arbitrary
+tweetcount = 0
 
 cnf = YAML::load(File.open(cfgfile))
 datadir = cnf[collection]['datadir']
-ofil = `date +%Y%m%d_%H%M`.chop + "_#{collection}.txt"
+ofil = `date +%Y%m%d_%H%M`.chop + "_wordlist_#{lang}.json"
+id_ofil = `date +%Y%m%d_%H%M`.chop + "_wordlist_#{lang}_id.txt"
 
 TweetStream.configure do |config|
   config.consumer_key       = cnf[collection]['con_key']
@@ -29,14 +71,53 @@ TweetStream.configure do |config|
   config.auth_method        = cnf[collection]['a_meth']
 end
 
-searchterm = File.readlines("#{wordlist}").join(',').gsub("\n","")
-#add option for command line searchterming?
-
-tweetfile = File.open("#{datadir}/#{ofil}",'a')
-
-TweetStream::Client.new.track("#{searchterm}") do |status|
-  tweet = JSON.generate(status.attrs)
-  tweetfile.puts tweet
+def kill_sample(doomed_lang)
+	# ps command will find any instance of wordlist, ignoring the grep and this ruby process, and kill it in order to start a new process
+  targets = (`ps -ef | grep -v grep | grep 'ruby ' | grep 'wordlist.rb' | grep ' #{doomed_lang} ' | grep -v #{$$} | awk '{print $2}'`).split
+  targets.each do |t|
+    puts "Killing process #{t}, existing wordlist process...\n"
+    Process.kill("KILL",t.to_i)
+  end
 end
 
-tweetfile.close
+searchterm = File.readlines("#{wordlist}").join(',').gsub("\n","")
+
+kill_sample(lang)
+
+unless nowrite
+  tweetfile = File.open("#{datadir}/#{ofil}",'a')
+end
+if idfile
+	puts 'writing to idfile'
+	tweet_id_file = File.open("#{datadir}/#{id_ofil}",'a')
+end
+
+puts "Tracking tweets in #{lang}..."
+TweetStream::Client.new.filter(lang: "#{lang}",track: "#{searchterm}") do |status|
+  break if tweetcount >= maxtweets
+  if checklang
+    if (status.lang == lang)
+      tweetcount+=1
+      unless nowrite
+        tweet = JSON.generate(status.attrs)
+        tweetfile.puts tweet
+      end
+			if idfile
+				tweet_id_file.puts status.id
+			end
+      puts status.text unless silent
+    end
+  else
+    tweetcount+=1
+    puts status.text unless silent
+    unless nowrite
+      tweet = JSON.generate(status.attrs)
+      tweetfile.puts tweet
+    end
+  end
+end
+
+unless nowrite
+  tweetfile.close
+	tweet_id_file.close
+end
