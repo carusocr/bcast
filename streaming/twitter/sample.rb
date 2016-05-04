@@ -24,26 +24,28 @@ would logically be caught by the client, too. Need to test this more.
 
 require 'rubygems'
 require 'yaml'
-gem 'tweetstream', "=2.6.1.1"
+require 'tweetstream'
 cfgfile = 'auth.yml'
 
 cnf = YAML::load(File.open(cfgfile))
-lang_to_track = ARGV[0] ? ARGV[0] : 'sample'
-collection = ARGV[1]
 abort "Enter 2-digit language code to track, or 'sample'!" unless ARGV[0]
 abort "Enter collection type!" unless ARGV[1]
+lang_to_track = ARGV[0]
+collection = ARGV[1]
+maxtweets = ARGV[2] ? ARGV[2] : 1000000
 datadir = cnf[collection]['datadir']
+tweetcount = 0
 
-def kill_sample
-	targets = (`ps -ef | grep -v grep | grep 'ruby ' | grep 'sample.rb' | grep -v #{$$} | awk '{print $2}'`).split
+def kill_sample(lang_to_track)
+	targets = (`ps -ef | grep -v grep | grep 'ruby ' | grep 'sample.rb' | grep #{lang_to_track} | grep -v #{$$} | awk '{print $2}'`).split
 	targets.each do |t|
 		puts "Killing process #{t}, existing sample process...\n"
 		Process.kill("KILL",t.to_i)
 	end
 end
 
-if ARGV[2] && ARGV[2] == 'kill'
-	kill_sample
+if ARGV[3] && ARGV[3] == 'kill'
+	kill_sample(lang_to_track)
 	exit
 end
 
@@ -55,30 +57,30 @@ TweetStream.configure do |config|
   config.auth_method        = cnf[collection]['a_meth']
 end
 
-ofil = `date +%Y%m%d_%H%M`.chop + "_#{lang_to_track}.json"
+ofil = `date +%Y%m%d_%H%M`.chop + "_#{lang_to_track}"
+id_dir = "/lorelei_rl/collection/id_lists"
 
-tweetfile = File.open("#{datadir}/#{ofil}",'a')
+tweetfile = File.open("#{datadir}/#{ofil}.json",'a')
+idfile = File.open("#{id_dir}/#{ofil}_ids.txt",'a')
 
-if lang_to_track == 'sample'
-  TweetStream::Client.new.sample do |status|
-#    puts status.user.screen_name, status.place.full_name
-#    puts status.text
-    tweet = JSON.generate(status.attrs)
-    tweetfile.puts tweet
-end
-else
-  puts "Tracking #{lang_to_track}."
-  TweetStream::Client.new.track(language="#{lang_to_track}") do |status|
-    #if status.lang == lang_to_track || status.lang == ''
-    # we want explicit matches
-    if status.lang == lang_to_track
-#      puts status.user.screen_name, status.place.full_name
-#      puts status.text
-#      puts status.lang
-      tweet = JSON.generate(status.attrs)
-      tweetfile.puts tweet
-    end
-  end
+puts "Tracking #{lang_to_track}..."
+TweetStream::Client.new.sample do |status|
+	if lang_to_track == 'sample' #if sample, grab everything
+		puts status.text
+		tweet = JSON.generate(status.attrs)
+		tweetfile.puts tweet
+		idfile.puts status.id
+		tweetcount += 1
+	end
+	if status.lang == lang_to_track
+		puts status.text
+		puts status.id
+		tweet = JSON.generate(status.attrs)
+		tweetfile.puts tweet
+		idfile.puts status.id
+		tweetcount += 1
+	end
 end
 
 tweetfile.close
+idfile.close

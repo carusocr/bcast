@@ -18,7 +18,7 @@ opts = Trollop::options do
   banner <<-EOS
 
 Collect from Twitter's streaming API using a file of keywords as search terms. 
-Script expects one word per line andrequires an auth.yml file containing app name and corresponding authentication data output information.
+Script expects one word per line and requires an auth.yml file containing app name and corresponding authentication data output information.
 
 auth.yml format:
 
@@ -32,7 +32,7 @@ test:
 
 SCRIPT USAGE:
 
-wordlist.rb -a <appname> -i <word list>
+wordlist.rb -a <appname> -i <word list> -l <language code>
 
 EOS
 
@@ -41,8 +41,10 @@ EOS
   opt :lang, "ISO 639-1 code of tweet language to be collected", :short => 'l', :required => true,:type => String
   opt :checklang, "Only collect tweet if it contains a lang value that matches expected lang", :short => 'c', :default => false
   opt :nowrite, "Do not write tweets to output file", :short => 'n', :default => false
+  opt :idfile, "Write tweet IDs to separate output file", :default => true
   opt :silent, "Do not print tweets as they are collected", :short => 's', :default => false
   opt :maxtweets, "Maximum number of tweets to collect", :short => 'm', :type => Integer
+	opt :exclude_english, "Ignore any tweets tagged as English", :default => false
 
 end
 
@@ -52,13 +54,17 @@ wordlist = opts[:infile]
 lang = opts[:lang]
 checklang = opts[:checklang]
 nowrite = opts[:nowrite]
+idfile = opts[:idfile]
 silent = opts[:silent]
 maxtweets = opts[:maxtweets] ? opts[:maxtweets] : 10000000 #arbitrary
+exclude_english = opts[:exclude_english]
 tweetcount = 0
 
 cnf = YAML::load(File.open(cfgfile))
 datadir = cnf[collection]['datadir']
-ofil = `date +%Y%m%d_%H%M`.chop + "_wordlist_#{wordlist}"
+ofil_type = (wordlist =~ /hashtag/) ? "hashtag" : "wordlist"
+ofil = `date +%Y%m%d_%H%M`.chop + "_#{ofil_type}_#{lang}.json"
+id_ofil = `date +%Y%m%d_%H%M`.chop + "_#{ofil_type}_#{lang}_id.txt"
 
 TweetStream.configure do |config|
   config.consumer_key       = cnf[collection]['con_key']
@@ -68,34 +74,57 @@ TweetStream.configure do |config|
   config.auth_method        = cnf[collection]['a_meth']
 end
 
+def kill_sample(doomed_lang,ofil_type)
+	# ps command will find any instance of wordlist, ignoring the grep and this ruby process, and kill it in order to start a new process
+	type_filter = ofil_type == "hashtag" ? "hashtag" : "-v hashtag" #don't kill hashtags if starting wordlist
+  targets = (`ps -ef | grep -v grep | grep 'ruby ' | grep 'wordlist.rb' | grep ' #{doomed_lang} ' | grep -v #{$$} | grep #{type_filter} | awk '{print $2}'`).split
+  targets.each do |t|
+    puts "Killing process #{t}, existing wordlist process...\n"
+    Process.kill("KILL",t.to_i)
+  end
+end
+
 searchterm = File.readlines("#{wordlist}").join(',').gsub("\n","")
+
+kill_sample(lang,ofil_type)
 
 unless nowrite
   tweetfile = File.open("#{datadir}/#{ofil}",'a')
 end
+if idfile
+	puts 'writing to idfile'
+	tweet_id_file = File.open("#{datadir}/#{id_ofil}",'a')
+end
 
 puts "Tracking tweets in #{lang}..."
 TweetStream::Client.new.filter(lang: "#{lang}",track: "#{searchterm}") do |status|
-  break if tweetcount > maxtweets
+  break if tweetcount >= maxtweets
   if checklang
     if (status.lang == lang)
       tweetcount+=1
-      unless nowrite
+      unless nowrite 
         tweet = JSON.generate(status.attrs)
         tweetfile.puts tweet
       end
+			if idfile
+				tweet_id_file.puts status.id
+			end
       puts status.text unless silent
     end
   else
     tweetcount+=1
     puts status.text unless silent
-    unless nowrite
+    unless nowrite || (status.lang == "en" && exclude_english)
       tweet = JSON.generate(status.attrs)
       tweetfile.puts tweet
     end
+		if idfile
+			tweet_id_file.puts status.id
+		end
   end
 end
 
 unless nowrite
   tweetfile.close
+	tweet_id_file.close
 end
