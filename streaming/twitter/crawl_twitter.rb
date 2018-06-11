@@ -18,44 +18,36 @@ You can search for multiple phrases by entering:
 'sushi burrito' OR 'sushi dinner' into the "All of these words" box, but it can return tweets
 where the words in the phrase aren't necessarily in the position specified.
 
-<div class="js-tweet-text-container">
-  <p class="TweetTextSize  js-tweet-text tweet-text" lang="en" data-aria-label-part="0">Babys first <strong>sushi</strong> <strong>burrito</strong>?!!!???? <a href="https://t.co/C94oypubtz" class="twitter-timeline-link u-hidden" data-pre-embedded="true" dir="ltr" >pic.twitter.com/C94oypubtz</a></p>
-</div>
-
-<div>
-data-tweet-id seems pretty promising
-
-page.first(:xpath,"//div[@data-tweet-id]").text
-
-this finds all tweet IDs on page but is intolerably slow...although maybe the slowness is actually
-useful for dealing with rate limits?
-
-page.all(:xpath,"//div").each do |d|
-  puts d['data-tweet-id'] if d['data-tweet-id']  
-end  
-
-AHA!
-
 page.first(:xpath,"//div[@data-tweet-id]")['data-tweet-id']
 
 So resize first to get a shitload of tweets?
-page.driver.browser.manage.window.resize_to(1000,8000)
-
+web.driver.resize_window(1000,8000) #poltergeist version  
+page.driver.browser.manage.window.resize_to(1000,8000) #selenium
 
 =end
 
 require 'capybara'
+require 'selenium/webdriver'
 require 'pry'
-require 'capybara/poltergeist'
+#require 'capybara/poltergeist'
 
+=begin
 searchterm = ARGV[0]
 startdate = ARGV[1]
 untildate = ARGV[2]
+=end
 
-searchpage = "https://twitter.com/search?l=&q=#{searchterm}%20since%3A#{startdate}%20until%3A#{untildate}&src=typd&lang=en"
+#searchpage = "https://twitter.com/search?l=&q=#{searchterm}%20since%3A#{startdate}%20until%3A#{untildate}&src=typd&lang=en"
+
+searchpage = 'https://twitter.com/search?l=&q=%22sushi%20burrito%22&src=typd&lang=en'
+#Capybara.javascript_driver = :selenium_chrome_headless
+#Capybara.default_driver = :selenium_chrome_headless
 
 Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
+  options = Selenium::WebDriver::Chrome::Options.new(
+    args: %w[headless disable-gpu]
+  )
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
 
 Capybara.javascript_driver = :chrome
